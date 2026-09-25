@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     cookie_name: str = "session_token"
     cookie_secure: bool = False
     seed_on_startup: bool = True
+    cookie_samesite: str = "lax"
 
 
 settings = Settings()
