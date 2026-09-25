@@ -10,5 +10,5 @@ export function MessageStatus({ status }: { status: string | null }) {
   if (status === "delivered") {
     return <CheckCheck className="h-3.5 w-3.5 opacity-70" />;
   }
-  return <CheckCheck className="h-3.5 w-3.5 text-[var(--accent)]" />;
+  return <CheckCheck className="h-3.5 w-3.5 text-white opacity-100" />;
 }

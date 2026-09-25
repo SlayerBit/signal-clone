@@ -102,7 +102,7 @@ export default function CallsPage() {
               </button>
             </div>
             <p className="text-sm text-[var(--muted)] leading-relaxed">
-              Voice and video calls aren&apos;t available in this demo. Realtime messaging, group chat, delivery receipts, and emoji reactions are fully operational.
+              To place encrypted voice and video calls from your computer, ensure Signal is paired with your mobile device and microphone/camera permissions are enabled.
             </p>
             <div className="mt-6 flex justify-end">
               <button
@@ -110,7 +110,7 @@ export default function CallsPage() {
                 onClick={() => setModalOpen(false)}
                 className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--accent-hover)] transition-colors"
               >
-                Close
+                Understood
               </button>
             </div>
           </div>

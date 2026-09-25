@@ -1,8 +1,14 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from sqlalchemy.orm import Session
 
+
 from app.core.security import hash_password
+from app.core.time_utils import utc_now
 from app.database.session import SessionLocal, engine
 from app.models.entities import (
     Contact,
@@ -27,7 +33,7 @@ def seed_if_empty() -> None:
 
 
 def _seed(db: Session) -> None:
-    now = datetime.utcnow()
+    now = utc_now()
     users = [
         User(
             id=1,
@@ -43,7 +49,7 @@ def _seed(db: Session) -> None:
         User(
             id=2,
             username="rahul",
-            phone="+919876543210",
+            phone="+919842946728",
             display_name="Rahul Sharma",
             avatar_color="#7c6bf0",
             password_hash=hash_password("123456"),
@@ -234,6 +240,17 @@ def _seed(db: Session) -> None:
 if __name__ == "__main__":
     from app.database.session import Base
 
-    Base.metadata.create_all(bind=engine)
-    seed_if_empty()
-    print("Seed complete.")
+    if "--reset" in sys.argv or "--force" in sys.argv:
+        Base.metadata.drop_all(bind=engine)
+        Base.metadata.create_all(bind=engine)
+        db = SessionLocal()
+        try:
+            _seed(db)
+        finally:
+            db.close()
+        print("Database reset and seeded successfully.")
+    else:
+        Base.metadata.create_all(bind=engine)
+        seed_if_empty()
+        print("Seed complete.")
+

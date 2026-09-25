@@ -6,12 +6,16 @@ Scaler AI Labs SDE Fullstack Assignment — Production-quality Signal Desktop ex
 
 ## Key Highlights & Implemented Bonuses
 
-In addition to all core mandatory requirements, three optional enhancements have been implemented:
+In addition to all core mandatory requirements, three optional enhancements have been selected and fully implemented:
 
 1. **Reply-to / Quoted Messages:** Spatially anchored reply action on hover, real-time quote preview in the composer with dismiss control, embedded quotes inside message bubbles, and smooth click-to-scroll navigation to the referenced message.
 2. **Emoji Reactions:** Contextually anchored reaction pill adjacent to message bubbles, instant emoji popup picker (`👍`, `❤️`, `😂`, `😮`, `😢`, `🔥`), aggregated interactive reaction chips rendered directly beneath the bubble, and real-time synchronization.
 3. **Signal Light & Dark Theme Support:** Centralized CSS design token system supporting both **Signal Dark** and **Signal Light** modes. Accessible via the App menu and Settings > Appearance, with persistent state stored in `localStorage` and zero flash on load. Includes custom chat accent color selection (Signal Blue, Emerald, Violet, Crimson, Amber, Graphite).
-4. **In-Chat Message Search:** Instant substring search across messages in the active thread with hit counter ("X of Y matches"), Previous/Next navigation controls, `<mark>` term highlighting, and auto-scroll.
+
+### Functional Interaction & UX Enhancements
+- **In-Chat Message Search:** Dual search design making the header search action fully functional with instant substring search across active thread messages, hit counter ("X of Y matches"), Previous/Next keyboard & button navigation, `<mark>` term highlighting, and auto-scroll.
+- **Unified Popover Regions:** Reaction picker and more-actions menus behave as unified interactive regions with grace timers and viewport anti-clipping to prevent accidental dismissal during pointer transit.
+
 
 ---
 

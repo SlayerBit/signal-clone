@@ -245,7 +245,7 @@ export function SettingsView({ user }: { user: UserType }) {
                       )}
                     </div>
                     <div className="h-12 w-full rounded-lg bg-zinc-950 p-2 flex flex-col justify-end">
-                      <div className="h-3 w-16 rounded-full bg-blue-600 self-end mb-1" />
+                      <div className="h-3 w-16 rounded-full bg-[#2c6bed] self-end mb-1" />
                       <div className="h-3 w-20 rounded-full bg-zinc-800" />
                     </div>
                   </div>
@@ -273,7 +273,7 @@ export function SettingsView({ user }: { user: UserType }) {
                       )}
                     </div>
                     <div className="h-12 w-full rounded-lg bg-zinc-100 p-2 flex flex-col justify-end border border-zinc-200">
-                      <div className="h-3 w-16 rounded-full bg-blue-600 self-end mb-1" />
+                      <div className="h-3 w-16 rounded-full bg-[#2c6bed] self-end mb-1" />
                       <div className="h-3 w-20 rounded-full bg-zinc-300" />
                     </div>
                   </div>

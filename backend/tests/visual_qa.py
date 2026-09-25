@@ -3,8 +3,9 @@ import os
 import sys
 from playwright.async_api import async_playwright
 
-ARTIFACTS_DIR = "/Users/slayer/.gemini/antigravity-ide/brain/eb07a2ed-3ad1-4349-afec-904815aaabc0"
+ARTIFACTS_DIR = "/Users/slayer/.gemini/antigravity-ide/brain/449381bf-c304-43dc-aa42-007b8b713b22"
 BASE_URL = "http://localhost:3000"
+
 
 async def run_visual_qa():
     print(f"Starting Complete UI/UX Visual QA on {BASE_URL}...")

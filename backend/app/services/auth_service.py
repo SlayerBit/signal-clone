@@ -1,11 +1,11 @@
 import re
-from datetime import datetime
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.security import generate_token, hash_password, hash_token, session_expiry, verify_password
+from app.core.time_utils import utc_now
 from app.models.entities import Session as DbSession
 from app.models.entities import User
 
@@ -34,7 +34,7 @@ def start_register(db: Session, identifier: str) -> str:
         "flow": "register",
         "username": username,
         "phone": phone,
-        "expires": datetime.utcnow().timestamp() + 600,
+        "expires": utc_now().timestamp() + 600,
     }
     return token
 
@@ -46,7 +46,7 @@ def verify_register_otp(pending_token: str, otp: str) -> str:
     if otp != settings.mock_otp:
         raise HTTPException(status_code=400, detail="Invalid OTP")
     setup_token = generate_token()
-    _pending[setup_token] = {**data, "flow": "register_setup", "expires": datetime.utcnow().timestamp() + 600}
+    _pending[setup_token] = {**data, "flow": "register_setup", "expires": utc_now().timestamp() + 600}
     del _pending[pending_token]
     return setup_token
 
@@ -83,7 +83,7 @@ def start_login(db: Session, identifier: str) -> str:
     _pending[token] = {
         "flow": "login",
         "user_id": user.id,
-        "expires": datetime.utcnow().timestamp() + 600,
+        "expires": utc_now().timestamp() + 600,
     }
     return token
 

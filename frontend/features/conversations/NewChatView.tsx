@@ -67,6 +67,8 @@ export function NewChatView({ onBack }: { onBack: () => void }) {
             if (groupMode) setGroupMode(false);
             else onBack();
           }}
+          title="Back"
+          aria-label="Back"
           className="rounded-lg p-2 hover:bg-[var(--hover)] text-[var(--muted)] hover:text-[var(--text)]"
         >
           <ChevronLeft className="h-5 w-5" />

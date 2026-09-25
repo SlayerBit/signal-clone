@@ -5,6 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.time_utils import utc_now
 from app.models.entities import Contact, Conversation, ConversationMember, Message, MessageReceipt, User
 from app.schemas.common import ConversationDetail, ConversationMemberDTO, ConversationSummary, MessageDTO, UserPublic
 from app.services.message_service import message_to_dto
@@ -95,7 +96,7 @@ def get_or_create_direct(db: Session, user_id: int, other_user_id: int) -> Conve
     conv = db.query(Conversation).filter(Conversation.direct_key == key).first()
     if conv:
         return conv
-    conv = Conversation(type="direct", direct_key=key, updated_at=datetime.utcnow())
+    conv = Conversation(type="direct", direct_key=key, updated_at=utc_now())
     db.add(conv)
     db.flush()
     db.add_all(
@@ -115,7 +116,7 @@ def create_group(db: Session, creator_id: int, title: str, member_ids: list[int]
         raise HTTPException(status_code=400, detail="Group name required")
     ids = set(member_ids)
     ids.add(creator_id)
-    conv = Conversation(type="group", title=title, updated_at=datetime.utcnow())
+    conv = Conversation(type="group", title=title, updated_at=utc_now())
     db.add(conv)
     db.flush()
     for uid in ids:

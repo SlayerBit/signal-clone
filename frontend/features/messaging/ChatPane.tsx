@@ -1,26 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  BellOff,
-  ChevronDown,
-  ChevronUp,
-  Clock,
-  MoreVertical,
-  Phone,
-  Search,
-  Send,
-  Smile,
-  Users,
-  Video,
-  X,
-} from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { api } from "@/lib/api";
 import { wsClient } from "@/lib/ws-client";
 import { useAppStore } from "@/store/app-store";
 import type { ConversationDetail, Message, User } from "@/types";
 import { MessageBubble } from "./MessageBubble";
+import { ChatHeader } from "./ChatHeader";
+import { ChatSearchOverlay } from "./ChatSearchOverlay";
+import { MessageComposer } from "./MessageComposer";
+import { GroupMembersDrawer } from "./GroupMembersDrawer";
+import { CallModalInfo, CallScopeModal } from "./CallScopeModal";
 
 function typingLabel(ids: number[], members: User[], meId: number) {
   const names = ids
@@ -34,7 +25,6 @@ function typingLabel(ids: number[], members: User[], meId: number) {
 
 const EMPTY_MESSAGES: Message[] = [];
 const EMPTY_TYPING: Record<number, boolean> = {};
-const QUICK_EMOJIS = ["😊", "👍", "❤️", "😂", "🔥", "🎉", "🙏", "👏", "✨", "🙌", "👋", "🚀"];
 
 export function ChatPane({
   conversationId,
@@ -60,14 +50,7 @@ export function ChatPane({
   const [text, setText] = useState("");
   const [membersOpen, setMembersOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [contacts, setContacts] = useState<User[]>([]);
-  const [overflowOpen, setOverflowOpen] = useState(false);
-  const [emojiBarOpen, setEmojiBarOpen] = useState(false);
-  const [callModal, setCallModal] = useState<{
-    type: "video" | "audio";
-    title: string;
-    description: string;
-  } | null>(null);
+  const [callModal, setCallModal] = useState<CallModalInfo | null>(null);
 
   // In-chat message search state
   const [searchOpen, setSearchOpen] = useState(false);
@@ -76,18 +59,6 @@ export function ChatPane({
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const typingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    if (membersOpen) {
-      api.contacts().then(setContacts).catch(() => {});
-    }
-  }, [membersOpen]);
-
-  const availableContacts = contacts.filter(
-    (c) => !activeDetail.members.some((m) => m.user_id === c.id)
-  );
 
   const members = activeDetail.members.map((m) => m.user);
   const title =
@@ -158,12 +129,6 @@ export function ChatPane({
   }
 
   useEffect(() => {
-    if (searchOpen) {
-      searchInputRef.current?.focus();
-    }
-  }, [searchOpen]);
-
-  useEffect(() => {
     if (matchingMessageIds.length > 0) {
       handleScrollToMessage(matchingMessageIds[searchMatchIndex]);
     }
@@ -195,7 +160,6 @@ export function ChatPane({
     appendMessage(optimistic);
     setText("");
     setReplyTo(null);
-    setEmojiBarOpen(false);
     wsClient.send("typing.stop", { conversation_id: conversationId });
     try {
       const saved = await api.sendMessage(conversationId, body, replyTo?.id, client_id);
@@ -214,210 +178,47 @@ export function ChatPane({
     }, 1200);
   }
 
-  function insertEmoji(emoji: string) {
-    setText((prev) => prev + emoji);
-    textareaRef.current?.focus();
-  }
-
-  const isAdmin = detail.members.find((m) => m.user_id === me.id)?.role === "admin";
+  const isAdmin = activeDetail.members.find((m) => m.user_id === me.id)?.role === "admin";
+  const replySenderName = replyTo
+    ? replyTo.sender_id === me.id
+      ? "yourself"
+      : members.find((m) => m.id === replyTo.sender_id)?.display_name ?? "message"
+    : undefined;
 
   return (
     <div className="relative flex h-full flex-1 flex-col bg-[var(--bg)]">
-      {/* Chat Header */}
-      <header className="relative flex h-14 shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--panel)] px-4">
-        <div className="flex items-center gap-3 min-w-0">
-          <Avatar user={headerUser} size={38} />
-          <div className="min-w-0">
-            <h2 className="truncate font-semibold text-[15px] leading-tight text-[var(--text)]">
-              {title}
-            </h2>
-            <p className="truncate text-xs text-[var(--muted)]">
-              {detail.type === "group"
-                ? `${detail.members.length} members`
-                : headerUser.is_online
-                  ? "Online"
-                  : headerUser.last_seen_at
-                    ? `Last seen recently`
-                    : "Offline"}
-            </p>
-          </div>
-        </div>
+      {/* Modular Header */}
+      <ChatHeader
+        title={title}
+        headerUser={headerUser}
+        isGroup={activeDetail.type === "group"}
+        memberCount={activeDetail.members.length}
+        searchOpen={searchOpen}
+        onToggleSearch={() => {
+          setSearchOpen((o) => !o);
+          if (searchOpen) setSearchQuery("");
+        }}
+        onOpenMembers={activeDetail.type === "group" ? () => setMembersOpen(true) : undefined}
+        onOpenCallModal={(info) => setCallModal(info)}
+      />
 
-        <div className="flex items-center gap-0.5 text-[var(--muted)]">
-          <button
-            type="button"
-            className="rounded-lg p-2 hover:bg-[var(--hover)] hover:text-[var(--text)] transition-colors"
-            title="Video call"
-            onClick={() =>
-              setCallModal({
-                type: "video",
-                title: "Video Calls",
-                description:
-                  "Video calls aren't implemented in this demo. End-to-end messaging, reactions, and media synchronization remain active.",
-              })
-            }
-          >
-            <Video className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            className="rounded-lg p-2 hover:bg-[var(--hover)] hover:text-[var(--text)] transition-colors"
-            title="Voice call"
-            onClick={() =>
-              setCallModal({
-                type: "audio",
-                title: "Voice Calls",
-                description:
-                  "Voice calls aren't implemented in this demo. You can continue sending instant messages, replies, and reactions.",
-              })
-            }
-          >
-            <Phone className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            className={`rounded-lg p-2 transition-colors ${
-              searchOpen
-                ? "bg-[var(--selected)] text-[var(--text)]"
-                : "hover:bg-[var(--hover)] hover:text-[var(--text)]"
-            }`}
-            title="Search in conversation"
-            onClick={() => {
-              setSearchOpen((o) => !o);
-              if (searchOpen) setSearchQuery("");
-            }}
-          >
-            <Search className="h-5 w-5" />
-          </button>
-          {detail.type === "group" && (
-            <button
-              type="button"
-              className="rounded-lg p-2 hover:bg-[var(--hover)] hover:text-[var(--text)] transition-colors"
-              title="Group members"
-              onClick={() => setMembersOpen(true)}
-            >
-              <Users className="h-5 w-5" />
-            </button>
-          )}
-          <button
-            type="button"
-            className="rounded-lg p-2 hover:bg-[var(--hover)] hover:text-[var(--text)] transition-colors"
-            title="More options"
-            onClick={() => setOverflowOpen((o) => !o)}
-          >
-            <MoreVertical className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Overflow dropdown menu */}
-        {overflowOpen && (
-          <div className="absolute right-4 top-14 z-30 w-56 rounded-xl border border-[var(--border)] bg-[var(--panel)] p-1.5 shadow-xl animate-in fade-in duration-100">
-            <button
-              type="button"
-              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs text-[var(--text)] hover:bg-[var(--hover)]"
-              onClick={() => {
-                setSearchOpen(true);
-                setOverflowOpen(false);
-              }}
-            >
-              <Search className="h-4 w-4 text-[var(--muted)]" />
-              Search in conversation
-            </button>
-            {detail.type === "group" && (
-              <button
-                type="button"
-                className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs text-[var(--text)] hover:bg-[var(--hover)]"
-                onClick={() => {
-                  setMembersOpen(true);
-                  setOverflowOpen(false);
-                }}
-              >
-                <Users className="h-4 w-4 text-[var(--muted)]" />
-                Group members & info
-              </button>
-            )}
-            <button
-              type="button"
-              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs text-[var(--text)] hover:bg-[var(--hover)]"
-              onClick={() => setOverflowOpen(false)}
-            >
-              <Clock className="h-4 w-4 text-[var(--muted)]" />
-              Disappearing messages (Off)
-            </button>
-            <button
-              type="button"
-              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs text-[var(--text)] hover:bg-[var(--hover)]"
-              onClick={() => setOverflowOpen(false)}
-            >
-              <BellOff className="h-4 w-4 text-[var(--muted)]" />
-              Mute notifications
-            </button>
-          </div>
-        )}
-      </header>
-
-      {/* In-Chat Message Search Bar */}
+      {/* Modular In-Chat Search Overlay */}
       {searchOpen && (
-        <div className="flex items-center gap-2 border-b border-[var(--border)] bg-[var(--panel)] px-4 py-2 text-sm shadow-xs animate-in slide-in-from-top-2 duration-150">
-          <Search className="h-4 w-4 shrink-0 text-[var(--muted)]" />
-          <input
-            ref={searchInputRef}
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setSearchMatchIndex(0);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                if (e.shiftKey) handlePrevMatch();
-                else handleNextMatch();
-              } else if (e.key === "Escape") {
-                setSearchOpen(false);
-                setSearchQuery("");
-              }
-            }}
-            placeholder="Search in conversation..."
-            className="flex-1 bg-transparent text-sm text-[var(--text)] placeholder:text-[var(--muted)] outline-none"
-          />
-          {searchQuery && (
-            <span className="shrink-0 text-xs text-[var(--muted)] tabular-nums">
-              {matchingMessageIds.length > 0
-                ? `${searchMatchIndex + 1} of ${matchingMessageIds.length}`
-                : "No matches"}
-            </span>
-          )}
-          <div className="flex items-center gap-0.5">
-            <button
-              type="button"
-              disabled={matchingMessageIds.length === 0}
-              onClick={handlePrevMatch}
-              className="rounded p-1 text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)] disabled:opacity-30"
-              title="Previous match (Shift+Enter)"
-            >
-              <ChevronUp className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              disabled={matchingMessageIds.length === 0}
-              onClick={handleNextMatch}
-              className="rounded p-1 text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)] disabled:opacity-30"
-              title="Next match (Enter)"
-            >
-              <ChevronDown className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setSearchOpen(false);
-                setSearchQuery("");
-              }}
-              className="rounded p-1 text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
-              title="Close search"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
+        <ChatSearchOverlay
+          searchQuery={searchQuery}
+          setSearchQuery={(q) => {
+            setSearchQuery(q);
+            setSearchMatchIndex(0);
+          }}
+          searchMatchIndex={searchMatchIndex}
+          matchingCount={matchingMessageIds.length}
+          onNext={handleNextMatch}
+          onPrev={handlePrevMatch}
+          onClose={() => {
+            setSearchOpen(false);
+            setSearchQuery("");
+          }}
+        />
       )}
 
       {/* Messages Scroll Area */}
@@ -439,15 +240,9 @@ export function ChatPane({
             {messages.map((m, i) => {
               const prev = messages[i - 1];
               const showSender =
-                detail.type === "group" && (!prev || prev.sender_id !== m.sender_id);
-              const sender = members.find((u) => u.id === m.sender_id);
+                activeDetail.type === "group" && (!prev || prev.sender_id !== m.sender_id);
               return (
                 <div key={m.client_id ?? m.id} className="relative">
-                  {showSender && sender && (
-                    <p className="mb-0.5 px-2 text-[11px] font-semibold text-[var(--accent)]">
-                      {sender.display_name}
-                    </p>
-                  )}
                   <MessageBubble
                     message={m}
                     isOwn={m.sender_id === me.id}
@@ -469,212 +264,29 @@ export function ChatPane({
         )}
       </div>
 
-      {/* Quoted Reply Preview Bar (Attached directly above composer) */}
-      {replyTo && (
-        <div className="border-t border-[var(--border)] bg-[var(--panel)] px-4 py-2 text-sm shadow-xs animate-in slide-in-from-bottom-2 duration-150">
-          <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
-            <div className="min-w-0 flex-1 border-l-2 border-[var(--accent)] pl-3">
-              <p className="text-xs font-semibold text-[var(--accent)]">
-                Replying to{" "}
-                {replyTo.sender_id === me.id
-                  ? "yourself"
-                  : members.find((m) => m.id === replyTo.sender_id)?.display_name ?? "message"}
-              </p>
-              <p className="truncate text-xs text-[var(--muted)] mt-0.5">{replyTo.body}</p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setReplyTo(null)}
-              className="rounded-full p-1 text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)] transition-colors"
-              title="Cancel reply"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Modular Message Composer */}
+      <MessageComposer
+        text={text}
+        onInput={onInput}
+        onSend={send}
+        replyTo={replyTo}
+        onCancelReply={() => setReplyTo(null)}
+        replySenderName={replySenderName}
+      />
 
-      {/* Quick Emoji Bar above composer */}
-      {emojiBarOpen && (
-        <div className="border-t border-[var(--border)] bg-[var(--panel)] px-4 py-2">
-          <div className="mx-auto flex max-w-3xl items-center gap-1.5 overflow-x-auto py-0.5">
-            {QUICK_EMOJIS.map((e) => (
-              <button
-                key={e}
-                type="button"
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-lg hover:bg-[var(--hover)] transition-transform hover:scale-115"
-                onClick={() => insertEmoji(e)}
-              >
-                {e}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Modular Group Members Drawer */}
+      <GroupMembersDrawer
+        isOpen={membersOpen}
+        onClose={() => setMembersOpen(false)}
+        conversationId={conversationId}
+        detail={activeDetail}
+        me={me}
+        isAdmin={isAdmin}
+        onDetailUpdated={(updated) => setConversationDetail(updated)}
+      />
 
-      {/* Composer Footer */}
-      <footer className="border-t border-[var(--border)] bg-[var(--panel)] p-3">
-        <div className="mx-auto flex max-w-3xl items-end gap-2 rounded-2xl border border-[var(--border)] bg-[var(--input-bg)] px-3 py-1.5 shadow-xs focus-within:border-[var(--accent)] transition-colors">
-          <button
-            type="button"
-            className={`p-1.5 text-[var(--muted)] transition-colors hover:text-[var(--text)] ${
-              emojiBarOpen ? "text-[var(--accent)]" : ""
-            }`}
-            title="Emoji selector"
-            onClick={() => setEmojiBarOpen((o) => !o)}
-          >
-            <Smile className="h-5 w-5" />
-          </button>
-          <textarea
-            ref={textareaRef}
-            rows={1}
-            value={text}
-            onChange={(e) => onInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                send();
-              }
-            }}
-            placeholder="Message"
-            className="max-h-32 flex-1 resize-none bg-transparent py-1.5 text-[14.5px] text-[var(--text)] placeholder:text-[var(--muted)] outline-none"
-          />
-          <button
-            type="button"
-            onClick={send}
-            disabled={!text.trim()}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-xs transition-opacity hover:opacity-95 disabled:opacity-30"
-            title="Send message"
-          >
-            <Send className="h-4 w-4" />
-          </button>
-        </div>
-      </footer>
-
-      {/* Group Members Side Drawer */}
-      {membersOpen && (
-        <div className="absolute inset-0 z-40 flex justify-end bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="flex h-full w-full max-w-md flex-col border-l border-[var(--border)] bg-[var(--panel)] p-5 shadow-2xl animate-in slide-in-from-right duration-200">
-            <div className="mb-4 flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-base text-[var(--text)]">Group members</h3>
-                <p className="text-xs text-[var(--muted)]">{activeDetail.members.length} members</p>
-              </div>
-              <button
-                type="button"
-                className="rounded-lg p-1.5 text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)] transition-colors"
-                onClick={() => setMembersOpen(false)}
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {isAdmin && (
-              <div className="mb-4 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] p-3">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
-                  Add Member
-                </p>
-                <div className="flex gap-2">
-                  <select
-                    id="add-member-select"
-                    className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--panel)] px-3 py-1.5 text-xs text-[var(--text)] outline-none"
-                    defaultValue=""
-                  >
-                    <option value="" disabled>
-                      Select a contact to add...
-                    </option>
-                    {availableContacts.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.display_name} (@{c.username})
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="rounded-lg bg-[var(--accent)] px-3.5 py-1.5 text-xs font-medium text-white hover:opacity-90 disabled:opacity-40 transition-opacity"
-                    onClick={async () => {
-                      const select = document.getElementById("add-member-select") as HTMLSelectElement;
-                      const uid = Number(select?.value);
-                      if (!uid) return;
-                      await api.addMember(conversationId, uid);
-                      const updated = await api.conversation(conversationId);
-                      setConversationDetail(updated);
-                      select.value = "";
-                    }}
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-            )}
-
-            <ul className="flex-1 space-y-1.5 overflow-y-auto pr-1">
-              {activeDetail.members.map((m) => (
-                <li
-                  key={m.user_id}
-                  className="flex items-center justify-between gap-2 rounded-xl p-2 hover:bg-[var(--hover)] transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar user={m.user} size={36} />
-                    <div>
-                      <p className="text-sm font-medium text-[var(--text)]">{m.user.display_name}</p>
-                      <p className="text-xs text-[var(--muted)]">
-                        {m.role === "admin" ? (
-                          <span className="font-semibold text-[var(--accent)]">Admin</span>
-                        ) : (
-                          "Member"
-                        )}
-                        {m.user_id === me.id && " (You)"}
-                      </p>
-                    </div>
-                  </div>
-                  {isAdmin && m.user_id !== me.id && (
-                    <button
-                      type="button"
-                      className="rounded-lg px-2.5 py-1 text-xs text-red-400 hover:bg-red-500/10 transition-colors"
-                      onClick={async () => {
-                        await api.removeMember(conversationId, m.user_id);
-                        const updated = await api.conversation(conversationId);
-                        setConversationDetail(updated);
-                      }}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
-
-      {/* Video & Voice Call Dialog */}
-      {callModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--dialog-overlay)] p-4 backdrop-blur-xs animate-in fade-in duration-150">
-          <div className="w-full max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-6 shadow-2xl animate-in zoom-in-95 duration-150">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent-light)] text-[var(--accent)]">
-              {callModal.type === "video" ? (
-                <Video className="h-6 w-6" />
-              ) : (
-                <Phone className="h-6 w-6" />
-              )}
-            </div>
-            <h3 className="text-lg font-semibold text-[var(--text)]">{callModal.title}</h3>
-            <p className="mt-2 text-sm text-[var(--muted)] leading-relaxed">
-              {callModal.description}
-            </p>
-            <div className="mt-6 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setCallModal(null)}
-                className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--accent-hover)] transition-colors"
-              >
-                Got it
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modular Video & Voice Call Dialog */}
+      <CallScopeModal modal={callModal} onClose={() => setCallModal(null)} />
     </div>
   );
 }

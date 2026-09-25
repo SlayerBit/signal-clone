@@ -32,7 +32,7 @@ type AppState = {
   setChatColor: (color: string) => void;
 };
 
-export const useAppStore = create<AppState>((set, get) => ({
+export const useAppStore = create<AppState>((set) => ({
   user: null,
   conversations: [],
   activeConversationId: null,

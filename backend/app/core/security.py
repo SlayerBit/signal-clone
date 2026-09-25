@@ -1,10 +1,11 @@
+from datetime import datetime, timedelta
 import hashlib
 import secrets
-from datetime import datetime, timedelta
 
 from passlib.context import CryptContext
 
 from app.core.config import settings
+from app.core.time_utils import utc_now
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -28,4 +29,5 @@ def hash_token(token: str) -> str:
 
 
 def session_expiry() -> datetime:
-    return datetime.utcnow() + timedelta(days=settings.session_days)
+    return utc_now() + timedelta(days=settings.session_days)
+

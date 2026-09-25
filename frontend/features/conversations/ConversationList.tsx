@@ -36,7 +36,7 @@ export function ConversationList({
   }
 
   return (
-    <ul className="flex-1 overflow-y-auto">
+    <ul className="flex-1 overflow-y-auto px-2 py-1 space-y-0.5">
       {conversations.map((c) => {
         const active = pathname === `/chats/${c.id}`;
         const p = peer(c, meId);
@@ -49,8 +49,10 @@ export function ConversationList({
           <li key={c.id}>
             <Link
               href={`/chats/${c.id}`}
-              className={`flex items-center gap-3 border-b border-[var(--border)] px-4 py-3 transition-colors ${
-                active ? "bg-[var(--selected)]" : "hover:bg-[var(--hover)]"
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 transition-all ${
+                active
+                  ? "bg-[var(--selected)] shadow-xs"
+                  : "hover:bg-[var(--hover)] text-[var(--text)]"
               }`}
             >
               <div className="relative shrink-0">
@@ -77,7 +79,7 @@ export function ConversationList({
                     {isLastFromMe && (
                       <span className="shrink-0 opacity-80">
                         {c.last_message?.sender_status === "read" ? (
-                          <CheckCheck className="h-3.5 w-3.5 text-blue-500" />
+                          <CheckCheck className="h-3.5 w-3.5 text-[var(--accent)]" />
                         ) : c.last_message?.sender_status === "delivered" ? (
                           <CheckCheck className="h-3.5 w-3.5" />
                         ) : (
@@ -102,4 +104,5 @@ export function ConversationList({
       })}
     </ul>
   );
+
 }

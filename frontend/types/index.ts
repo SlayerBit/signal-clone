@@ -22,6 +22,8 @@ export type Message = {
   id: number;
   conversation_id: number;
   sender_id: number;
+  sender_name?: string | null;
+  sender_avatar_color?: string | null;
   body: string;
   reply_to_id: number | null;
   reply_to: ReplyPreview | null;
@@ -30,6 +32,7 @@ export type Message = {
   sender_status: string | null;
   reactions: Reaction[];
 };
+
 
 export type ConversationSummary = {
   id: number;

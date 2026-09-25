@@ -39,6 +39,7 @@ def health():
 
 
 @app.websocket("/ws")
-async def ws_route(websocket: WebSocket):
-    token = websocket.cookies.get(settings.cookie_name)
-    await websocket_endpoint(websocket, token)
+async def ws_route(websocket: WebSocket, token: str | None = None):
+    session_token = token or websocket.cookies.get(settings.cookie_name)
+    await websocket_endpoint(websocket, session_token)
+

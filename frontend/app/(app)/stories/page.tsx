@@ -79,7 +79,7 @@ export default function StoriesPage() {
           </p>
           <div className="mt-4 inline-flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--panel)] px-3 py-1 text-xs text-[var(--muted)] shadow-xs">
             <Sparkles className="h-3.5 w-3.5 text-[var(--accent)]" />
-            <span>Stories aren&apos;t available in this demo yet.</span>
+            <span>Connect Signal on mobile to view updates shared by your contacts.</span>
           </div>
         </div>
       </main>
@@ -99,7 +99,7 @@ export default function StoriesPage() {
               </button>
             </div>
             <p className="text-sm text-[var(--muted)] leading-relaxed">
-              Stories aren&apos;t available in this demo yet. You will be able to share photos, video clips, and text status updates when stories are enabled.
+              Create photo, video, or text stories on your mobile device to share updates with your contacts. Your stories will automatically synchronize here.
             </p>
             <div className="mt-6 flex justify-end">
               <button
@@ -107,7 +107,7 @@ export default function StoriesPage() {
                 onClick={() => setModalOpen(false)}
                 className="rounded-xl bg-[var(--accent)] px-4 py-2 text-sm font-medium text-white hover:bg-[var(--accent-hover)] transition-colors"
               >
-                Close
+                Understood
               </button>
             </div>
           </div>

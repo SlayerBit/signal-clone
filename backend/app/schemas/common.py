@@ -33,6 +33,8 @@ class MessageDTO(BaseModel):
     id: int
     conversation_id: int
     sender_id: int
+    sender_name: str | None = None
+    sender_avatar_color: str | None = None
     body: str
     reply_to_id: int | None
     reply_to: MessageReplyPreview | None

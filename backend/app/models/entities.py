@@ -10,6 +10,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from app.core.time_utils import utc_now
 from app.database.session import Base
 
 
@@ -25,7 +26,7 @@ class User(Base):
     bio: Mapped[str | None] = mapped_column(String(280))
     is_online: Mapped[bool] = mapped_column(Boolean, default=False)
     last_seen_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     sessions: Mapped[list["Session"]] = relationship(back_populates="user")
     contacts: Mapped[list["Contact"]] = relationship(
@@ -40,7 +41,7 @@ class Session(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     token_hash: Mapped[str] = mapped_column(String(128), unique=True, index=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     user: Mapped["User"] = relationship(back_populates="sessions")
 
@@ -52,7 +53,7 @@ class Contact(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     contact_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     owner: Mapped["User"] = relationship(foreign_keys=[owner_id], back_populates="contacts")
     contact_user: Mapped["User"] = relationship(foreign_keys=[contact_user_id])
@@ -65,8 +66,8 @@ class Conversation(Base):
     type: Mapped[str] = mapped_column(String(16), index=True)  # direct | group
     title: Mapped[str | None] = mapped_column(String(128))
     direct_key: Mapped[str | None] = mapped_column(String(64), unique=True, nullable=True)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     members: Mapped[list["ConversationMember"]] = relationship(back_populates="conversation")
     messages: Mapped[list["Message"]] = relationship(back_populates="conversation")
@@ -82,7 +83,7 @@ class ConversationMember(Base):
     conversation_id: Mapped[int] = mapped_column(ForeignKey("conversations.id"), index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     role: Mapped[str] = mapped_column(String(16), default="member")  # admin | member
-    joined_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    joined_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     conversation: Mapped["Conversation"] = relationship(back_populates="members")
     user: Mapped["User"] = relationship()
@@ -97,7 +98,7 @@ class Message(Base):
     body: Mapped[str] = mapped_column(Text)
     reply_to_id: Mapped[int | None] = mapped_column(ForeignKey("messages.id"), nullable=True)
     client_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
 
     conversation: Mapped["Conversation"] = relationship(back_populates="messages")
     sender: Mapped["User"] = relationship()
@@ -114,7 +115,7 @@ class MessageReceipt(Base):
     message_id: Mapped[int] = mapped_column(ForeignKey("messages.id"), index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     status: Mapped[str] = mapped_column(String(16), default="sent")  # sent|delivered|read
-    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     message: Mapped["Message"] = relationship(back_populates="receipts")
 
@@ -127,6 +128,6 @@ class MessageReaction(Base):
     message_id: Mapped[int] = mapped_column(ForeignKey("messages.id"), index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     emoji: Mapped[str] = mapped_column(String(16))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
     message: Mapped["Message"] = relationship(back_populates="reactions")

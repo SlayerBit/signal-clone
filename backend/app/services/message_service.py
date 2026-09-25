@@ -3,6 +3,7 @@ from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session, joinedload
 
+from app.core.time_utils import utc_now
 from app.models.entities import ConversationMember, Message, MessageReaction, MessageReceipt, User
 from app.schemas.common import MessageDTO, MessageReplyPreview, ReactionDTO
 
@@ -35,10 +36,17 @@ def message_to_dto(db: Session, msg: Message | None, viewer_id: int) -> MessageD
     sender_status = None
     if msg.sender_id == viewer_id:
         sender_status = _aggregate_sender_status(db, msg.id)
+
+    msg_sender = db.query(User).filter(User.id == msg.sender_id).first()
+    sender_name = msg_sender.display_name if msg_sender else "Unknown"
+    sender_avatar_color = msg_sender.avatar_color if msg_sender else "#3b82f6"
+
     return MessageDTO(
         id=msg.id,
         conversation_id=msg.conversation_id,
         sender_id=msg.sender_id,
+        sender_name=sender_name,
+        sender_avatar_color=sender_avatar_color,
         body=msg.body,
         reply_to_id=msg.reply_to_id,
         reply_to=reply_preview,
@@ -118,7 +126,7 @@ def create_message(
         body=body,
         reply_to_id=reply_to_id,
         client_id=client_id,
-        created_at=datetime.utcnow(),
+        created_at=utc_now(),
     )
     db.add(msg)
     db.flush()
@@ -141,7 +149,7 @@ def create_message(
 
     conv = db.query(Conversation).filter(Conversation.id == conversation_id).first()
     if conv:
-        conv.updated_at = datetime.utcnow()
+        conv.updated_at = utc_now()
     db.commit()
     db.refresh(msg)
     return msg
@@ -155,7 +163,7 @@ def mark_delivered(db: Session, user_id: int, message_id: int) -> None:
     )
     if receipt and receipt.status != "read":
         receipt.status = "delivered"
-        receipt.updated_at = datetime.utcnow()
+        receipt.updated_at = utc_now()
         db.commit()
 
 
@@ -177,7 +185,7 @@ def mark_conversation_read(db: Session, user_id: int, conversation_id: int, up_t
     message_ids = []
     for r in receipts:
         r.status = "read"
-        r.updated_at = datetime.utcnow()
+        r.updated_at = utc_now()
         message_ids.append(r.message_id)
     db.commit()
     return message_ids

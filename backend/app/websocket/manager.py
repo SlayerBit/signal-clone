@@ -6,6 +6,7 @@ from typing import Any
 from fastapi import WebSocket
 from sqlalchemy.orm import Session
 
+from app.core.time_utils import utc_now
 from app.database.session import SessionLocal
 from app.models.entities import User
 from app.schemas.common import UserPublic
@@ -79,7 +80,7 @@ class ConnectionManager:
                 return
             user.is_online = online
             if not online:
-                user.last_seen_at = datetime.utcnow()
+                user.last_seen_at = utc_now()
             db.commit()
             db.refresh(user)
             asyncio.create_task(self.broadcast_presence(UserPublic.model_validate(user)))
