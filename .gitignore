@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/.venv/
+backend/venv/
+backend/data/
+
+__pycache__/
+*.py[cod]
+.Python
+
+# Build / cache
+frontend/.next/
+frontend/out/
+dist/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment & secrets
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Database (local dev copies; production uses configured path)
+backend/data/*.db
+backend/data/*.db-journal
+*.sqlite3
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Logs & temp
+*.log
+tmp/
+temp/
+
+# Reference materials (assignment PDF, personal screenshots)
+reference/
+
+# Test artifacts
+coverage/
+htmlcov/
