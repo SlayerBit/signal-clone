@@ -15,6 +15,7 @@ import {
 import { api } from "@/lib/api";
 import { useAppStore } from "@/store/app-store";
 import { SignalLogo } from "@/components/ui/SignalLogo";
+import { useToast } from "@/components/ui/Toast";
 
 export function NavRail() {
   const pathname = usePathname();
@@ -26,6 +27,7 @@ export function NavRail() {
   const conversations = useAppStore((s) => s.conversations);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { info } = useToast();
 
   const totalUnread = conversations.reduce((acc, c) => acc + (c.unread_count || 0), 0);
 
@@ -57,6 +59,7 @@ export function NavRail() {
       /* ignore */
     }
     setUser(null);
+    info("Signed out successfully");
     router.push("/login");
   }
 

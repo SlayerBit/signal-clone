@@ -11,6 +11,7 @@ class UserPublic(BaseModel):
     phone: str | None
     display_name: str
     avatar_color: str
+    avatar_id: str | None = None
     bio: str | None = None
     is_online: bool
     last_seen_at: datetime | None

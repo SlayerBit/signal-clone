@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
+import { useToast } from "@/components/ui/Toast";
 import { api } from "@/lib/api";
 import type { ConversationDetail, User } from "@/types";
 
@@ -23,6 +24,7 @@ export function GroupMembersDrawer({
   isAdmin: boolean;
   onDetailUpdated: (detail: ConversationDetail) => void;
 }) {
+  const { success, error: toastError } = useToast();
   const [contacts, setContacts] = useState<User[]>([]);
   const [selectedContactId, setSelectedContactId] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
@@ -59,8 +61,9 @@ export function GroupMembersDrawer({
       const updated = await api.conversation(conversationId);
       onDetailUpdated(updated);
       setSelectedContactId("");
-    } catch {
-      /* ignore */
+      success("Member added to group");
+    } catch (err) {
+      toastError(err instanceof Error ? err.message : "Failed to add member");
     } finally {
       setSubmitting(false);
     }
@@ -71,8 +74,9 @@ export function GroupMembersDrawer({
       await api.removeMember(conversationId, userId);
       const updated = await api.conversation(conversationId);
       onDetailUpdated(updated);
-    } catch {
-      /* ignore */
+      success("Member removed from group");
+    } catch (err) {
+      toastError(err instanceof Error ? err.message : "Failed to remove member. Only admins can manage members.");
     }
   }
 

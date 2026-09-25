@@ -51,7 +51,7 @@ def verify_register_otp(pending_token: str, otp: str) -> str:
     return setup_token
 
 
-def complete_register(db: Session, setup_token: str, display_name: str, avatar_color: str | None) -> tuple[User, str]:
+def complete_register(db: Session, setup_token: str, display_name: str, avatar_color: str | None, avatar_id: str | None = None) -> tuple[User, str]:
     data = _pending.get(setup_token)
     if not data or data.get("flow") != "register_setup":
         raise HTTPException(status_code=400, detail="Invalid setup token")
@@ -60,6 +60,7 @@ def complete_register(db: Session, setup_token: str, display_name: str, avatar_c
         phone=data.get("phone"),
         display_name=display_name.strip(),
         avatar_color=avatar_color or "#c4a574",
+        avatar_id=avatar_id,
         password_hash=hash_password(settings.mock_otp),
     )
     db.add(user)

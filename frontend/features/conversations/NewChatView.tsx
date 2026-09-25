@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { AtSign, Hash, Users, ChevronLeft } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { api } from "@/lib/api";
+import { useToast } from "@/components/ui/Toast";
 import type { User } from "@/types";
 
 export function NewChatView({ onBack }: { onBack: () => void }) {
@@ -17,6 +18,7 @@ export function NewChatView({ onBack }: { onBack: () => void }) {
   const [selected, setSelected] = useState<number[]>([]);
   const [addedIds, setAddedIds] = useState<number[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { success, error: toastError } = useToast();
 
   useEffect(() => {
     api.contacts().then(setContacts).catch(() => setContacts([]));
@@ -40,8 +42,13 @@ export function NewChatView({ onBack }: { onBack: () => void }) {
 
   async function createGroup() {
     if (!groupTitle.trim() || selected.length < 1) return;
-    const { id } = await api.createGroup(groupTitle.trim(), selected);
-    router.push(`/chats/${id}`);
+    try {
+      const { id } = await api.createGroup(groupTitle.trim(), selected);
+      success(`Group "${groupTitle.trim()}" created`);
+      router.push(`/chats/${id}`);
+    } catch {
+      toastError("Failed to create group");
+    }
   }
 
   async function handleAddContact(user: User, e: React.MouseEvent) {
@@ -51,8 +58,9 @@ export function NewChatView({ onBack }: { onBack: () => void }) {
       setAddedIds((prev) => [...prev, user.id]);
       const updatedContacts = await api.contacts();
       setContacts(updatedContacts);
+      success(`${user.display_name} added to contacts`);
     } catch {
-      /* ignore */
+      toastError("Failed to add contact");
     }
   }
 

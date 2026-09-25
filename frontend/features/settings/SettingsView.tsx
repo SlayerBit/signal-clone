@@ -13,13 +13,21 @@ import {
   Lock,
   MessageSquare,
   Moon,
+  Monitor,
   Phone,
   Settings as SettingsIcon,
   ShieldCheck,
+  Smartphone,
   Sun,
+  Tablet,
   User,
+  Copy,
+  Loader2,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
+import { AvatarPicker } from "@/components/ui/AvatarPicker";
+import { useToast } from "@/components/ui/Toast";
+import { api } from "@/lib/api";
 import { useAppStore } from "@/store/app-store";
 import type { User as UserType } from "@/types";
 
@@ -33,6 +41,7 @@ const nav = [
   { href: "/settings/calls", label: "Calls", icon: Phone },
   { href: "/settings/notifications", label: "Notifications", icon: Bell },
   { href: "/settings/privacy", label: "Privacy", icon: Lock },
+  { href: "/settings/linked-devices", label: "Linked Devices", icon: Smartphone },
   { href: "/settings/data-usage", label: "Data usage", icon: Globe },
   { href: "/settings/backups", label: "Backups", icon: Database },
 ];
@@ -53,6 +62,16 @@ export function SettingsView({ user }: { user: UserType }) {
   const chatColor = useAppStore((s) => s.chatColor);
   const setChatColor = useAppStore((s) => s.setChatColor);
 
+  const appUser = useAppStore((s) => s.user) || user;
+  const setUser = useAppStore((s) => s.setUser);
+  const { success, error: toastError } = useToast();
+
+  const [displayName, setDisplayName] = useState(appUser.display_name);
+  const [avatarId, setAvatarId] = useState<string | null>(appUser.avatar_id ?? null);
+  const [avatarColor, setAvatarColor] = useState(appUser.avatar_color || "#2c6bed");
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [copiedSafetyNumber, setCopiedSafetyNumber] = useState(false);
+
   // Local settings toggles state for realistic interactive feel
   const [enterToSend, setEnterToSend] = useState(true);
   const [spellCheck, setSpellCheck] = useState(true);
@@ -62,6 +81,34 @@ export function SettingsView({ user }: { user: UserType }) {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [notificationSounds, setNotificationSounds] = useState(true);
   const [reactionNotifs, setReactionNotifs] = useState(true);
+
+  const handleSaveProfile = async () => {
+    if (!displayName.trim()) {
+      toastError("Display name cannot be empty");
+      return;
+    }
+    setIsSavingProfile(true);
+    try {
+      const updated = await api.updateProfile({
+        display_name: displayName.trim(),
+        avatar_id: avatarId,
+        avatar_color: avatarColor,
+      });
+      setUser(updated);
+      success("Profile updated successfully");
+    } catch (err) {
+      toastError(err instanceof Error ? err.message : "Failed to update profile");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const handleCopySafetyNumber = () => {
+    navigator.clipboard.writeText("34091 88301 29402 77192 38401 92831");
+    setCopiedSafetyNumber(true);
+    success("Safety number copied to clipboard");
+    setTimeout(() => setCopiedSafetyNumber(false), 2000);
+  };
 
   const rawSection = pathname.replace(/^\/settings\/?/, "").split("/")[0];
   const section =
@@ -144,13 +191,21 @@ export function SettingsView({ user }: { user: UserType }) {
           {/* PROFILE SECTION */}
           {section === "profile" && (
             <div className="space-y-4">
-              <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-6 space-y-5 shadow-xs">
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-6 space-y-6 shadow-xs">
                 <div className="flex items-center gap-4">
-                  <Avatar user={user} size={64} />
+                  <Avatar
+                    user={{
+                      ...appUser,
+                      display_name: displayName,
+                      avatar_id: avatarId,
+                      avatar_color: avatarColor,
+                    }}
+                    size={68}
+                  />
                   <div>
-                    <h3 className="font-semibold text-base text-[var(--text)]">{user.display_name}</h3>
+                    <h3 className="font-semibold text-base text-[var(--text)]">{displayName || appUser.display_name}</h3>
                     <p className="text-xs text-[var(--muted)]">
-                      {user.phone ? `Phone: ${user.phone}` : `@${user.username}`}
+                      {appUser.phone ? `Phone: ${appUser.phone}` : `@${appUser.username || "user"}`}
                     </p>
                     <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[var(--accent-light)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--accent)]">
                       Active Account
@@ -158,15 +213,27 @@ export function SettingsView({ user }: { user: UserType }) {
                   </div>
                 </div>
 
-                <div className="space-y-3 pt-2">
+                {/* Avatar Preset & Color Picker */}
+                <div className="pt-4 border-t border-[var(--border)]">
+                  <AvatarPicker
+                    selectedPresetId={avatarId}
+                    selectedColor={avatarColor}
+                    onPresetChange={setAvatarId}
+                    onColorChange={setAvatarColor}
+                    displayName={displayName || appUser.display_name}
+                  />
+                </div>
+
+                <div className="space-y-3 pt-4 border-t border-[var(--border)]">
                   <div>
                     <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
                       Display Name
                     </label>
                     <input
-                      defaultValue={user.display_name}
-                      readOnly
-                      className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2 text-sm text-[var(--text)] outline-none"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      placeholder="Your display name"
+                      className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors"
                     />
                   </div>
 
@@ -175,9 +242,9 @@ export function SettingsView({ user }: { user: UserType }) {
                       Phone Number
                     </label>
                     <input
-                      defaultValue={user.phone ?? "Not configured"}
+                      defaultValue={appUser.phone ?? "Not configured"}
                       readOnly
-                      className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2 text-sm text-[var(--text)] outline-none"
+                      className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2 text-sm text-[var(--muted)] outline-none opacity-80 cursor-not-allowed"
                     />
                   </div>
 
@@ -186,10 +253,26 @@ export function SettingsView({ user }: { user: UserType }) {
                       Username
                     </label>
                     <input
-                      defaultValue={user.username ? `@${user.username}` : "None"}
+                      defaultValue={appUser.username ? `@${appUser.username}` : "None"}
                       readOnly
-                      className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2 text-sm text-[var(--text)] outline-none"
+                      className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2 text-sm text-[var(--muted)] outline-none opacity-80 cursor-not-allowed"
                     />
+                  </div>
+
+                  <div className="pt-2 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={handleSaveProfile}
+                      disabled={isSavingProfile}
+                      className="flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50 transition-all shadow-xs"
+                    >
+                      {isSavingProfile ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Check className="h-4 w-4" />
+                      )}
+                      Save Profile
+                    </button>
                   </div>
                 </div>
               </div>
@@ -200,13 +283,36 @@ export function SettingsView({ user }: { user: UserType }) {
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-light)] text-[var(--accent)]">
                     <ShieldCheck className="h-5 w-5" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <h4 className="text-sm font-semibold text-[var(--text)]">
                       End-to-End Encryption
                     </h4>
                     <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed">
                       Messages and calls are secured with simulated Double Ratchet encryption in this demo. Your safety number is verified across active sessions.
                     </p>
+                    <div className="mt-3 flex items-center justify-between rounded-xl bg-[var(--input-bg)] border border-[var(--border)] px-3 py-2">
+                      <span className="font-mono text-xs text-[var(--muted)] tracking-wider">
+                        34091 88301 29402 77192 38401 92831
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleCopySafetyNumber}
+                        className="flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium text-[var(--text)] hover:bg-[var(--hover)] transition-colors"
+                        aria-label="Copy safety number"
+                      >
+                        {copiedSafetyNumber ? (
+                          <>
+                            <Check className="h-3.5 w-3.5 text-emerald-500" />
+                            <span className="text-emerald-500 font-semibold">Copied</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3.5 w-3.5 text-[var(--muted)]" />
+                            <span>Copy</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -461,6 +567,49 @@ export function SettingsView({ user }: { user: UserType }) {
                   <p className="text-xs text-[var(--muted)]">No users currently blocked.</p>
                 </div>
                 <span className="text-xs text-[var(--muted)] font-medium">0 contacts</span>
+              </div>
+            </div>
+          )}
+
+          {/* LINKED DEVICES (PLACEHOLDER) */}
+          {section === "linked-devices" && (
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-6 shadow-xs">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-light)] text-[var(--accent)]">
+                    <Smartphone className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-[var(--text)]">This Device</h3>
+                    <p className="text-xs text-[var(--muted)]">Signal Desktop — Active Session</p>
+                  </div>
+                  <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-500">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    Connected
+                  </span>
+                </div>
+              </div>
+
+              {/* Informational placeholder state */}
+              <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-6 space-y-3 shadow-xs">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--hover)] text-[var(--muted)]">
+                    <Monitor className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-[var(--text)]">
+                        Secondary Device Linking
+                      </h4>
+                      <span className="rounded-full bg-[var(--hover)] border border-[var(--border)] px-2 py-0.5 text-[10px] font-medium text-[var(--muted)] uppercase tracking-wider">
+                        Coming Soon
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-[var(--muted)] leading-relaxed">
+                      Linked devices aren&apos;t available in this demo yet. In the full Signal client, you can pair mobile phones and secondary computers by scanning a secure cryptographic QR code. All linked sessions synchronize message history and encryption ratchets securely.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           )}

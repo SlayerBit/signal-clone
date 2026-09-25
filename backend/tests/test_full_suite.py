@@ -58,18 +58,27 @@ def test_register_complete_flow():
     r3 = client.post("/api/auth/register/complete", json={
         "setup_token": setup_token,
         "display_name": f"Tester {uname}",
-        "avatar_color": "#4ade80"
+        "avatar_color": "#4ade80",
+        "avatar_id": "phoenix"
     })
     assert r3.status_code == 200
     assert "session_token" in r3.cookies
     new_user = r3.json()
     assert new_user["username"] == uname
     assert new_user["display_name"] == f"Tester {uname}"
+    assert new_user["avatar_id"] == "phoenix"
     
     # 4. Verify auth me works with session cookie
     r_me = client.get("/api/auth/me", cookies=r3.cookies)
     assert r_me.status_code == 200
     assert r_me.json()["id"] == new_user["id"]
+    assert r_me.json()["avatar_id"] == "phoenix"
+
+    # 5. Verify update profile (avatar_id, avatar_color) via PATCH /api/auth/me
+    r_patch = client.patch("/api/auth/me", json={"avatar_id": "orbit", "avatar_color": "#7c6bf0"}, cookies=r3.cookies)
+    assert r_patch.status_code == 200
+    assert r_patch.json()["avatar_id"] == "orbit"
+    assert r_patch.json()["avatar_color"] == "#7c6bf0"
 
 def test_conversations_and_direct_deduplication():
     # Login Om

@@ -4,6 +4,7 @@ export type User = {
   phone: string | null;
   display_name: string;
   avatar_color: string;
+  avatar_id?: string | null;
   bio?: string | null;
   is_online: boolean;
   last_seen_at: string | null;

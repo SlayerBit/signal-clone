@@ -20,14 +20,20 @@ dist/
 
 # Environment & secrets
 .env
-.env.local
-.env.*.local
-backend/.env
+.env.*
+!.env.example
+*.env
+backend/.env*
+frontend/.env*
 
-# Database (local dev copies; production uses configured path)
-backend/data/*.db
-backend/data/*.db-journal
+# Database (local dev copies; production uses configured persistent volume)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
 *.sqlite3
+backend/data/
 
 # IDE & OS
 .idea/
@@ -46,3 +52,5 @@ reference/
 # Test artifacts
 coverage/
 htmlcov/
+screenshots/
+

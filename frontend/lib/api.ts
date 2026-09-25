@@ -61,10 +61,15 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ pending_token, otp }),
     }),
-  registerComplete: (setup_token: string, display_name: string, avatar_color?: string) =>
+  registerComplete: (setup_token: string, display_name: string, avatar_color?: string, avatar_id?: string | null) =>
     request<User>("/api/auth/register/complete", {
       method: "POST",
-      body: JSON.stringify({ setup_token, display_name, avatar_color }),
+      body: JSON.stringify({ setup_token, display_name, avatar_color, avatar_id }),
+    }),
+  updateProfile: (data: { display_name?: string; avatar_color?: string; avatar_id?: string | null; bio?: string }) =>
+    request<User>("/api/auth/me", {
+      method: "PATCH",
+      body: JSON.stringify(data),
     }),
   logout: () => request<{ ok: boolean }>("/api/auth/logout", { method: "POST" }),
   conversations: (q?: string) =>

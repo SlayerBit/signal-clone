@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
+import { useToast } from "@/components/ui/Toast";
 import { api } from "@/lib/api";
 import { wsClient } from "@/lib/ws-client";
 import { useAppStore } from "@/store/app-store";
@@ -35,6 +36,7 @@ export function ChatPane({
   detail: ConversationDetail;
   me: User;
 }) {
+  const { error: toastError } = useToast();
   const messages = useAppStore((s) => s.messages[conversationId] ?? EMPTY_MESSAGES);
   const replyTo = useAppStore((s) => s.replyTo);
   const setReplyTo = useAppStore((s) => s.setReplyTo);
@@ -164,8 +166,8 @@ export function ChatPane({
     try {
       const saved = await api.sendMessage(conversationId, body, replyTo?.id, client_id);
       updateMessage({ ...saved, sender_status: saved.sender_status ?? "sent" });
-    } catch {
-      /* toast in prod */
+    } catch (err) {
+      toastError(err instanceof Error ? err.message : "Couldn't send message. Please try again.");
     }
   }
 

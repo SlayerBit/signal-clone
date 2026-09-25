@@ -114,3 +114,15 @@ div[data-next-badge],
 div[data-nextjs-dialog-overlay] {
   display: none !important;
 }
+
+/* Toast notification entrance animation */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(24px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}

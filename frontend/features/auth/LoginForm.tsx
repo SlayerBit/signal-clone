@@ -7,6 +7,7 @@ import { ArrowLeft, Moon, Sun, X, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAppStore } from "@/store/app-store";
 import { SignalLogo } from "@/components/ui/SignalLogo";
+import { useToast } from "@/components/ui/Toast";
 
 /* ─────────────────────────────────────────────────────────
    Auth stages:
@@ -19,6 +20,7 @@ export function LoginForm() {
   const router = useRouter();
   const theme = useAppStore((s) => s.theme);
   const setTheme = useAppStore((s) => s.setTheme);
+  const { success, error: toastError } = useToast();
 
   const [stage, setStage] = useState<"welcome" | "identify" | "otp">(
     "welcome"
@@ -59,14 +61,14 @@ export function LoginForm() {
         setOtp(["1", "2", "3", "4", "5", "6"]); // prefill demo OTP
         setStage("otp");
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Could not verify identity."
-        );
+        const msg = err instanceof Error ? err.message : "Could not verify identity.";
+        setError(msg);
+        toastError(msg);
       } finally {
         setLoading(false);
       }
     },
-    [identifier]
+    [identifier, toastError]
   );
 
   const handleOtpSubmit = useCallback(
@@ -80,15 +82,16 @@ export function LoginForm() {
       setLoading(true);
       try {
         await api.loginOtp(pendingToken, otpCode);
+        success("Signed in successfully");
         router.push("/chats");
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Invalid code. Please try again."
-        );
+        const msg = err instanceof Error ? err.message : "Invalid code. Please try again.";
+        setError(msg);
+        toastError(msg);
         setLoading(false);
       }
     },
-    [otp, pendingToken, router]
+    [otp, pendingToken, router, success, toastError]
   );
 
   const handleOtpChange = useCallback(

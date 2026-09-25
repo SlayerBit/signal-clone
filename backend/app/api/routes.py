@@ -26,6 +26,14 @@ class RegisterCompleteBody(BaseModel):
     setup_token: str
     display_name: str
     avatar_color: str | None = None
+    avatar_id: str | None = None
+
+
+class ProfileUpdateBody(BaseModel):
+    display_name: str | None = None
+    avatar_color: str | None = None
+    avatar_id: str | None = None
+    bio: str | None = None
 
 
 class PasswordLoginBody(BaseModel):
@@ -86,7 +94,7 @@ def register_verify(body: OtpBody):
 
 @router.post("/auth/register/complete")
 def register_complete(body: RegisterCompleteBody, response: Response, db: Session = Depends(get_db)):
-    user, token = auth_service.complete_register(db, body.setup_token, body.display_name, body.avatar_color)
+    user, token = auth_service.complete_register(db, body.setup_token, body.display_name, body.avatar_color, body.avatar_id)
     _set_session_cookie(response, token)
     return UserPublic.model_validate(user)
 
@@ -126,6 +134,21 @@ def logout(
 
 @router.get("/auth/me", response_model=UserPublic)
 def me(user: User = Depends(get_current_user)):
+    return UserPublic.model_validate(user)
+
+
+@router.patch("/auth/me", response_model=UserPublic)
+def update_me(body: ProfileUpdateBody, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    if body.display_name is not None:
+        user.display_name = body.display_name.strip()
+    if body.avatar_color is not None:
+        user.avatar_color = body.avatar_color
+    if body.avatar_id is not None:
+        user.avatar_id = body.avatar_id
+    if body.bio is not None:
+        user.bio = body.bio.strip()
+    db.commit()
+    db.refresh(user)
     return UserPublic.model_validate(user)
 
 

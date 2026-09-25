@@ -7,18 +7,21 @@ import { ArrowLeft, Moon, Sun, Loader2 } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAppStore } from "@/store/app-store";
 import { SignalLogo } from "@/components/ui/SignalLogo";
+import { AvatarPicker } from "@/components/ui/AvatarPicker";
+import { useToast } from "@/components/ui/Toast";
 
 /* ─────────────────────────────────────────────────────────
    Registration steps:
      0 → enter username/phone
      1 → enter 6-digit OTP
-     2 → set display name
+     2 → set display name + choose avatar
    ───────────────────────────────────────────────────────── */
 
 export function RegisterForm() {
   const router = useRouter();
   const theme = useAppStore((s) => s.theme);
   const setTheme = useAppStore((s) => s.setTheme);
+  const { success, error: toastError } = useToast();
 
   const [step, setStep] = useState(0);
   const [identifier, setIdentifier] = useState("");
@@ -26,6 +29,8 @@ export function RegisterForm() {
   const [setup, setSetup] = useState("");
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [displayName, setDisplayName] = useState("");
+  const [avatarId, setAvatarId] = useState<string | null>("shield");
+  const [avatarColor, setAvatarColor] = useState("#2c6bed");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -128,11 +133,19 @@ export function RegisterForm() {
           setLoading(false);
           return;
         }
-        await api.registerComplete(setup, displayName.trim());
+        await api.registerComplete(
+          setup,
+          displayName.trim(),
+          avatarColor,
+          avatarId ?? undefined
+        );
+        success("Profile setup complete! Welcome to Signal.");
         router.push("/chats");
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Registration failed");
+      const msg = err instanceof Error ? err.message : "Registration failed";
+      setError(msg);
+      toastError(msg);
     } finally {
       setLoading(false);
     }
@@ -142,7 +155,7 @@ export function RegisterForm() {
   const titles = [
     { heading: "Create your account", sub: "Enter your username or phone number to get started." },
     { heading: "Enter verification code", sub: `Enter the 6-digit code to verify ${identifier || "your identity"}.` },
-    { heading: "Set your name", sub: "Choose how others will see you on Signal." },
+    { heading: "Set up your profile", sub: "Choose a name and avatar for your Signal profile." },
   ];
 
   const isDisabled =
@@ -177,7 +190,7 @@ export function RegisterForm() {
       </div>
 
       <div
-        className="flex h-full flex-col items-center px-6 animate-in fade-in duration-200"
+        className="flex h-full flex-col items-center px-6 animate-in fade-in duration-200 overflow-y-auto"
         style={{ background: "var(--bg)" }}
       >
         <div
@@ -384,54 +397,79 @@ export function RegisterForm() {
                 </div>
               )}
 
-              {/* ── Step 2: Display Name ── */}
+              {/* ── Step 2: Display Name + Avatar ── */}
               {step === 2 && (
-                <div className="mb-4">
-                  <label
-                    htmlFor="reg-displayname"
-                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    Display name
-                  </label>
-                  <input
-                    id="reg-displayname"
-                    type="text"
-                    value={displayName}
-                    onChange={(e) => {
-                      setDisplayName(e.target.value);
-                      if (error) setError("");
-                    }}
-                    placeholder="e.g. Alice Smith"
-                    autoFocus
-                    disabled={loading}
-                    className="w-full rounded-lg border px-4 py-3 text-[15px] outline-none transition-all duration-150 placeholder:text-[13px]"
+                <div className="mb-4 space-y-5">
+                  <div>
+                    <label
+                      htmlFor="reg-displayname"
+                      className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Display name
+                    </label>
+                    <input
+                      id="reg-displayname"
+                      type="text"
+                      value={displayName}
+                      onChange={(e) => {
+                        setDisplayName(e.target.value);
+                        if (error) setError("");
+                      }}
+                      placeholder="e.g. Alice Smith"
+                      autoFocus
+                      disabled={loading}
+                      className="w-full rounded-lg border px-4 py-3 text-[15px] outline-none transition-all duration-150 placeholder:text-[13px]"
+                      style={{
+                        borderColor: error
+                          ? theme === "dark"
+                            ? "#f87171"
+                            : "#dc2626"
+                          : "var(--border)",
+                        background: "var(--input-bg)",
+                        color: "var(--text)",
+                      }}
+                      onFocus={(e) => {
+                        if (!error) e.target.style.borderColor = signalBlue;
+                        e.target.style.boxShadow = `0 0 0 3px ${
+                          error
+                            ? "rgba(239,68,68,0.1)"
+                            : "rgba(44,107,237,0.12)"
+                        }`;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = error
+                          ? theme === "dark"
+                            ? "#f87171"
+                            : "#dc2626"
+                          : "var(--border)";
+                        e.target.style.boxShadow = "none";
+                      }}
+                    />
+                  </div>
+
+                  {/* Avatar Picker */}
+                  <div
+                    className="rounded-xl border p-4"
                     style={{
-                      borderColor: error
-                        ? theme === "dark"
-                          ? "#f87171"
-                          : "#dc2626"
-                        : "var(--border)",
+                      borderColor: "var(--border)",
                       background: "var(--input-bg)",
-                      color: "var(--text)",
                     }}
-                    onFocus={(e) => {
-                      if (!error) e.target.style.borderColor = signalBlue;
-                      e.target.style.boxShadow = `0 0 0 3px ${
-                        error
-                          ? "rgba(239,68,68,0.1)"
-                          : "rgba(44,107,237,0.12)"
-                      }`;
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = error
-                        ? theme === "dark"
-                          ? "#f87171"
-                          : "#dc2626"
-                        : "var(--border)";
-                      e.target.style.boxShadow = "none";
-                    }}
-                  />
+                  >
+                    <p
+                      className="mb-3 text-center text-[11px] font-semibold uppercase tracking-wider"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Choose your avatar
+                    </p>
+                    <AvatarPicker
+                      selectedPresetId={avatarId}
+                      selectedColor={avatarColor}
+                      onPresetChange={setAvatarId}
+                      onColorChange={setAvatarColor}
+                      displayName={displayName || "?"}
+                    />
+                  </div>
                 </div>
               )}
 

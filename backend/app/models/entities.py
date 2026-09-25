@@ -22,6 +22,7 @@ class User(Base):
     phone: Mapped[str | None] = mapped_column(String(32), unique=True, index=True)
     display_name: Mapped[str] = mapped_column(String(128))
     avatar_color: Mapped[str] = mapped_column(String(16), default="#3b82f6")
+    avatar_id: Mapped[str | None] = mapped_column(String(32), nullable=True)
     password_hash: Mapped[str | None] = mapped_column(String(255))
     bio: Mapped[str | None] = mapped_column(String(280))
     is_online: Mapped[bool] = mapped_column(Boolean, default=False)
