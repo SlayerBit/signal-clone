@@ -290,13 +290,13 @@ export function LoginForm() {
                   : "#9dbbf9",
             }}
           >
-            <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between px-6 pt-12 pb-0 sm:px-10 sm:pt-16 lg:flex-row lg:items-end lg:px-16 lg:pt-20">
+            <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-8 px-6 pt-12 pb-12 sm:px-10 sm:pt-16 sm:pb-16 lg:flex-row lg:items-center lg:gap-12 lg:px-16 lg:pt-20 lg:pb-16">
               {/* Left Column: Speak Freely & CTAs */}
-              <div className="z-10 flex w-full flex-col items-start text-left lg:max-w-xl pb-12 sm:pb-16 lg:pb-24">
+              <div className="z-10 flex w-full flex-col items-start text-left lg:max-w-lg shrink-0">
                 <h1 className="text-5xl font-extrabold tracking-tight text-[#111827] dark:text-white sm:text-6xl lg:text-7xl leading-[1.06]">
                   Speak Freely
                 </h1>
-                <p className="mt-6 text-lg font-normal leading-relaxed text-[#1f2937]/90 dark:text-slate-200 sm:text-xl max-w-lg">
+                <p className="mt-6 text-lg font-normal leading-relaxed text-[#1f2937]/90 dark:text-slate-200 sm:text-xl">
                   Say &quot;hello&quot; to a different messaging experience. An unexpected focus on privacy,
                   combined with all of the features you expect.
                 </p>
@@ -326,11 +326,11 @@ export function LoginForm() {
               </div>
 
               {/* Right Column: Floating Two-Phone Artwork */}
-              <div className="relative mt-8 flex w-full items-end justify-center lg:mt-0 lg:w-1/2 lg:justify-end">
+              <div className="relative mt-4 flex w-full items-center justify-center lg:mt-0 lg:flex-1 lg:justify-end">
                 <img
                   src="/signal-hero-phones.png"
                   alt="Signal encrypted messenger phone screens"
-                  className="max-h-[460px] w-auto max-w-full drop-shadow-[0_20px_40px_rgba(0,0,0,0.18)] sm:max-h-[560px] lg:max-h-[640px] object-contain transition-transform duration-300 hover:scale-101 select-none"
+                  className="max-h-[440px] w-auto max-w-full drop-shadow-[0_20px_40px_rgba(0,0,0,0.18)] sm:max-h-[520px] lg:max-h-[580px] object-contain transition-transform duration-300 hover:scale-101 select-none"
                 />
               </div>
             </div>
