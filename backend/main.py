@@ -1,19 +1,40 @@
+import logging
 import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 
 from app.api.routes import router
 from app.core.config import settings
 from app.database.session import Base, engine
 from app.websocket.handlers import websocket_endpoint
 
+logger = logging.getLogger(__name__)
+
+
+def run_sqlite_migrations(db_engine=None) -> None:
+    """Safely apply missing column migrations to SQLite databases idempotently."""
+    target_engine = db_engine or engine
+    if target_engine.dialect.name != "sqlite":
+        return
+
+    inspector = inspect(target_engine)
+    if "users" in inspector.get_table_names():
+        columns = {col["name"] for col in inspector.get_columns("users")}
+        if "avatar_id" not in columns:
+            logger.info("Applying SQLite migration: adding users.avatar_id column...")
+            with target_engine.begin() as conn:
+                conn.execute(text("ALTER TABLE users ADD COLUMN avatar_id VARCHAR(32)"))
+            logger.info("Applied SQLite migration: added users.avatar_id successfully.")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     os.makedirs(os.path.dirname(settings.database_url.replace("sqlite:///", "")) or ".", exist_ok=True)
     Base.metadata.create_all(bind=engine)
+    run_sqlite_migrations(engine)
     if settings.seed_on_startup:
         from seed.run import seed_if_empty
 
