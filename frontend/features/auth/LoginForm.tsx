@@ -193,17 +193,31 @@ export function LoginForm() {
       {stage === "welcome" ? (
         <div className="flex w-full flex-col animate-in fade-in duration-300">
           {/* ─── 1. CLEAN NAVIGATION / HEADER ─── */}
-          <header className="sticky top-0 z-40 flex h-18 w-full items-center justify-between border-b border-[var(--border)] bg-white/95 px-6 backdrop-blur-md dark:bg-[#121214]/95 sm:px-10 lg:px-16">
+          <header
+            className={`sticky top-0 z-40 flex h-18 w-full items-center justify-between border-b px-6 backdrop-blur-md transition-colors sm:px-10 lg:px-16 ${
+              theme === "dark"
+                ? "border-[#27272c] bg-[#121214]/95 text-[#f3f3f6]"
+                : "border-slate-200/80 bg-white/95 text-[#121216]"
+            }`}
+          >
             {/* Left: Signal Icon + Wordmark */}
             <div className="flex items-center gap-3">
               <SignalLogo size={36} color={signalBlue} />
-              <span className="text-[26px] font-extrabold tracking-tight text-[#121216] dark:text-[#f3f3f6]">
+              <span
+                className={`text-[26px] font-extrabold tracking-tight ${
+                  theme === "dark" ? "text-[#f3f3f6]" : "text-[#121216]"
+                }`}
+              >
                 Signal
               </span>
             </div>
 
             {/* Right Navigation links */}
-            <nav className="flex items-center gap-2 sm:gap-4 lg:gap-7 text-sm font-medium text-[var(--text-secondary)]">
+            <nav
+              className={`flex items-center gap-2 sm:gap-4 lg:gap-7 text-sm font-medium ${
+                theme === "dark" ? "text-[#a0a0ab]" : "text-slate-700"
+              }`}
+            >
               <button
                 type="button"
                 onClick={() => setStage("identify")}
@@ -214,7 +228,9 @@ export function LoginForm() {
               <button
                 type="button"
                 onClick={() => setHelpModalOpen(true)}
-                className="hidden hover:text-[var(--text)] md:inline-block transition-colors"
+                className={`hidden md:inline-block transition-colors ${
+                  theme === "dark" ? "hover:text-[#f3f3f6]" : "hover:text-black"
+                }`}
               >
                 Help
               </button>
@@ -222,7 +238,9 @@ export function LoginForm() {
                 href="https://signal.org/blog"
                 target="_blank"
                 rel="noreferrer"
-                className="hidden hover:text-[var(--text)] lg:inline-block transition-colors"
+                className={`hidden lg:inline-block transition-colors ${
+                  theme === "dark" ? "hover:text-[#f3f3f6]" : "hover:text-black"
+                }`}
               >
                 Blog
               </a>
@@ -230,7 +248,9 @@ export function LoginForm() {
                 href="https://signal.org/docs"
                 target="_blank"
                 rel="noreferrer"
-                className="hidden hover:text-[var(--text)] lg:inline-block transition-colors"
+                className={`hidden lg:inline-block transition-colors ${
+                  theme === "dark" ? "hover:text-[#f3f3f6]" : "hover:text-black"
+                }`}
               >
                 Developers
               </a>
@@ -238,18 +258,26 @@ export function LoginForm() {
                 href="https://signal.org/work-at-signal"
                 target="_blank"
                 rel="noreferrer"
-                className="hidden hover:text-[var(--text)] xl:inline-block transition-colors"
+                className={`hidden xl:inline-block transition-colors ${
+                  theme === "dark" ? "hover:text-[#f3f3f6]" : "hover:text-black"
+                }`}
               >
                 Careers
               </a>
               <button
                 type="button"
                 onClick={() => setDonateModalOpen(true)}
-                className="hidden hover:text-[var(--text)] sm:inline-block transition-colors"
+                className={`hidden sm:inline-block transition-colors ${
+                  theme === "dark" ? "hover:text-[#f3f3f6]" : "hover:text-black"
+                }`}
               >
                 Donate
               </button>
-              <div className="hidden items-center gap-1 text-xs text-[var(--muted)] sm:flex">
+              <div
+                className={`hidden items-center gap-1 text-xs sm:flex ${
+                  theme === "dark" ? "text-[#828290]" : "text-slate-500"
+                }`}
+              >
                 <Globe className="h-3.5 w-3.5" />
                 <span>English</span>
               </div>
@@ -258,7 +286,11 @@ export function LoginForm() {
               <button
                 type="button"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="flex items-center gap-1 rounded-full border border-[var(--border)] bg-[var(--panel)] px-3 py-1.5 text-xs text-[var(--text-secondary)] shadow-xs transition-colors hover:bg-[var(--hover)] hover:text-[var(--text)]"
+                className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs shadow-xs transition-colors ${
+                  theme === "dark"
+                    ? "border-[#27272c] bg-[#1a1a1e] text-[#a0a0ab] hover:bg-[#24242a] hover:text-[#f3f3f6]"
+                    : "border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-black"
+                }`}
                 title="Toggle light/dark theme"
               >
                 {theme === "dark" ? (
@@ -290,13 +322,21 @@ export function LoginForm() {
                   : "#9dbbf9",
             }}
           >
-            <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-8 px-6 pt-12 pb-12 sm:px-10 sm:pt-16 sm:pb-16 lg:flex-row lg:items-center lg:gap-12 lg:px-16 lg:pt-20 lg:pb-16">
+            <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between gap-10 px-6 pt-12 pb-12 sm:px-10 sm:pt-16 sm:pb-16 lg:flex-row lg:items-center lg:gap-14 lg:px-16 lg:pt-20 lg:pb-16">
               {/* Left Column: Speak Freely & CTAs */}
               <div className="z-10 flex w-full flex-col items-start text-left lg:max-w-lg shrink-0">
-                <h1 className="text-5xl font-extrabold tracking-tight text-[#111827] dark:text-white sm:text-6xl lg:text-7xl leading-[1.06]">
+                <h1
+                  className={`text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl leading-[1.06] ${
+                    theme === "dark" ? "text-white" : "text-[#111827]"
+                  }`}
+                >
                   Speak Freely
                 </h1>
-                <p className="mt-6 text-lg font-normal leading-relaxed text-[#1f2937]/90 dark:text-slate-200 sm:text-xl">
+                <p
+                  className={`mt-6 text-lg font-normal leading-relaxed sm:text-xl ${
+                    theme === "dark" ? "text-slate-200" : "text-[#1f2937]"
+                  }`}
+                >
                   Say &quot;hello&quot; to a different messaging experience. An unexpected focus on privacy,
                   combined with all of the features you expect.
                 </p>
@@ -306,31 +346,39 @@ export function LoginForm() {
                   <button
                     type="button"
                     onClick={() => setStage("identify")}
-                    className="flex h-14 items-center justify-center rounded-full bg-white px-8 text-[16px] font-bold text-[#2c6bed] shadow-lg transition-all hover:bg-slate-50 hover:shadow-xl hover:scale-102 active:scale-98 dark:bg-white dark:text-[#2c6bed]"
+                    className="flex h-14 items-center justify-center rounded-full bg-white px-8 text-[16px] font-bold text-[#2c6bed] shadow-lg transition-all hover:bg-slate-50 hover:shadow-xl hover:scale-102 active:scale-98"
                   >
                     Get Signal
                   </button>
                   <button
                     type="button"
                     onClick={() => setRestoreModalOpen(true)}
-                    className="text-sm font-semibold text-[#111827] underline decoration-slate-400 underline-offset-4 transition-colors hover:text-[#2c6bed] dark:text-slate-200"
+                    className={`text-sm font-semibold underline decoration-slate-400 underline-offset-4 transition-colors hover:text-[#2c6bed] ${
+                      theme === "dark" ? "text-slate-200" : "text-[#111827]"
+                    }`}
                   >
                     Restore or transfer
                   </button>
                 </div>
 
-                <div className="mt-6 flex items-center gap-2 text-xs font-medium text-[#1f2937]/75 dark:text-slate-300">
-                  <ShieldCheck className="h-4 w-4 text-[#2c6bed] dark:text-blue-400" />
+                <div
+                  className={`mt-6 flex items-center gap-2 text-xs font-medium ${
+                    theme === "dark" ? "text-slate-300" : "text-[#1f2937]/85"
+                  }`}
+                >
+                  <ShieldCheck
+                    className={`h-4 w-4 ${theme === "dark" ? "text-blue-400" : "text-[#2c6bed]"}`}
+                  />
                   <span>Free, open source, and nonprofit. No ads, no trackers.</span>
                 </div>
               </div>
 
               {/* Right Column: Floating Two-Phone Artwork */}
-              <div className="relative mt-4 flex w-full items-center justify-center lg:mt-0 lg:flex-1 lg:justify-end">
+              <div className="relative flex w-full items-center justify-center lg:flex-1 lg:justify-end">
                 <img
                   src="/signal-hero-phones.png"
                   alt="Signal encrypted messenger phone screens"
-                  className="max-h-[440px] w-auto max-w-full drop-shadow-[0_20px_40px_rgba(0,0,0,0.18)] sm:max-h-[520px] lg:max-h-[580px] object-contain transition-transform duration-300 hover:scale-101 select-none"
+                  className="max-h-[460px] w-auto max-w-full drop-shadow-[0_20px_40px_rgba(0,0,0,0.2)] sm:max-h-[520px] lg:max-h-[580px] object-contain transition-transform duration-300 hover:scale-101 select-none"
                 />
               </div>
             </div>
