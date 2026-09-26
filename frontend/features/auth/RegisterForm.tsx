@@ -149,29 +149,29 @@ export function RegisterForm() {
 
   return (
     <div
-      className={`flex min-h-screen w-full flex-col transition-colors select-none ${
+      className={`flex min-h-screen w-full flex-col justify-between transition-colors select-none ${
         theme === "dark"
-          ? "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#172544] via-[#0f172a] to-[#090d16] text-[#f3f3f6]"
-          : "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#d8e6fe] via-[#edf3fe] to-[#f8faff] text-[#121216]"
+          ? "bg-[#0e1628] text-[#f3f3f6]"
+          : "bg-[#edf2fb] text-[#121216]"
       }`}
     >
       {/* ─── SIMPLIFIED AUTHENTICATION HEADER ─── */}
       <header
         className={`sticky top-0 z-40 flex h-18 w-full items-center justify-between border-b px-6 backdrop-blur-md transition-colors sm:px-10 lg:px-16 ${
           theme === "dark"
-            ? "border-[#27272c] bg-[#121214]/90 text-[#f3f3f6]"
-            : "border-slate-200/80 bg-white/90 text-[#121216]"
+            ? "border-[#202c44] bg-[#121214]/95 text-[#f3f3f6]"
+            : "border-slate-200/80 bg-white/95 text-[#121216]"
         }`}
       >
         {/* Left: Signal Icon + Wordmark */}
         <Link
           href="/login"
-          className="flex items-center gap-3 cursor-pointer group"
+          className="flex items-center gap-3 cursor-pointer group focus-visible:outline-none"
           title="Return to Welcome page"
         >
-          <SignalLogo size={34} color={signalBlue} />
+          <SignalLogo size={38} color={signalBlue} />
           <span
-            className={`text-[24px] font-extrabold tracking-tight transition-colors ${
+            className={`text-[26px] font-extrabold tracking-tight transition-colors ${
               theme === "dark" ? "text-[#f3f3f6]" : "text-[#121216]"
             }`}
           >
@@ -185,10 +185,10 @@ export function RegisterForm() {
           <button
             type="button"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs shadow-xs transition-colors ${
+            className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium shadow-2xs transition-colors ${
               theme === "dark"
                 ? "border-[#27272c] bg-[#1a1a1e] text-[#a0a0ab] hover:bg-[#24242a] hover:text-[#f3f3f6]"
-                : "border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-black"
+                : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-black"
             }`}
             title="Toggle light/dark theme"
           >
@@ -209,10 +209,10 @@ export function RegisterForm() {
                 setStep((s) => Math.max(0, s - 1) as 0 | 1 | 2);
                 if (step === 1) setOtp(["", "", "", "", "", ""]);
               }}
-              className={`group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+              className={`group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold shadow-2xs transition-colors ${
                 theme === "dark"
                   ? "border-[#27272c] bg-[#1a1a1e] text-[#a0a0ab] hover:bg-[#24242a] hover:text-white"
-                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-black shadow-xs"
+                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-black"
               }`}
               title="Back to previous step"
             >
@@ -222,10 +222,10 @@ export function RegisterForm() {
           ) : (
             <Link
               href="/login"
-              className={`group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+              className={`group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold shadow-2xs transition-colors ${
                 theme === "dark"
                   ? "border-[#27272c] bg-[#1a1a1e] text-[#a0a0ab] hover:bg-[#24242a] hover:text-white"
-                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-black shadow-xs"
+                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-black"
               }`}
             >
               <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
@@ -236,14 +236,14 @@ export function RegisterForm() {
       </header>
 
       {/* ─── MAIN REGISTRATION CARD / CONTENT ─── */}
-      <main className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:py-12 animate-in fade-in duration-200">
+      <main className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12 animate-in fade-in duration-200">
         <div
           className={`w-full ${
-            step === 2 ? "max-w-[490px]" : "max-w-[460px]"
-          } rounded-3xl border p-7 sm:p-9 shadow-2xl backdrop-blur-xl transition-all ${
+            step === 2 ? "max-w-[480px]" : "max-w-[440px]"
+          } rounded-3xl border p-7 sm:p-9 transition-all ${
             theme === "dark"
-              ? "border-[#27272c]/90 bg-[#16171c]/90 shadow-black/50"
-              : "border-slate-200/80 bg-white/95 shadow-blue-950/5"
+              ? "border-[#22314e] bg-[#141d30] shadow-[0_8px_30px_rgba(0,0,0,0.45)]"
+              : "border-[#d2dff4] bg-white shadow-[0_8px_30px_rgba(24,81,180,0.06)]"
           }`}
         >
           {/* Card Header: Title, Subtitle, and Step Progress */}
@@ -261,7 +261,7 @@ export function RegisterForm() {
                         ? "w-6 bg-[#2c6bed]"
                         : s < step
                         ? "w-3 bg-[#2c6bed]/50"
-                        : "w-3 bg-[var(--border)]"
+                        : "w-3 bg-slate-200 dark:bg-[#23314d]"
                     }`}
                   />
                 ))}
@@ -269,15 +269,15 @@ export function RegisterForm() {
             </div>
 
             <h1
-              className={`text-2xl sm:text-[28px] font-extrabold leading-tight tracking-tight ${
+              className={`text-[28px] sm:text-[30px] font-extrabold leading-tight tracking-tight ${
                 theme === "dark" ? "text-white" : "text-[#111827]"
               }`}
             >
               {titles[step].heading}
             </h1>
             <p
-              className={`mt-2 text-[15px] leading-relaxed ${
-                theme === "dark" ? "text-slate-300" : "text-[#1f2937]/80"
+              className={`mt-2 text-[14.5px] leading-relaxed ${
+                theme === "dark" ? "text-slate-300" : "text-slate-600"
               }`}
             >
               {titles[step].sub}
@@ -290,7 +290,7 @@ export function RegisterForm() {
               <div className="mb-5">
                 <label
                   htmlFor="reg-identifier"
-                  className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]"
+                  className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
                 >
                   Username or phone number
                 </label>
@@ -306,7 +306,7 @@ export function RegisterForm() {
                   autoComplete="username"
                   autoFocus
                   disabled={loading}
-                  className="h-13 sm:h-14 w-full rounded-2xl border border-[var(--border)] bg-[var(--input-bg)] px-4 text-[16px] text-[var(--text)] outline-none transition-all placeholder:text-[14.5px] placeholder:text-[var(--muted)] focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50 shadow-2xs"
+                  className="h-13 sm:h-14 w-full rounded-2xl border border-slate-200 dark:border-[#2b3a58] bg-slate-50/80 dark:bg-[#18233a] px-4 text-[16px] text-slate-900 dark:text-white outline-none transition-all placeholder:text-[14.5px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-[#2c6bed] focus:bg-white dark:focus:bg-[#1c2842] focus:ring-4 focus:ring-[#2c6bed]/15 disabled:opacity-50 shadow-2xs"
                 />
               </div>
             )}
@@ -329,13 +329,13 @@ export function RegisterForm() {
                       onKeyDown={(e) => handleOtpKeyDown(i, e)}
                       onPaste={i === 0 ? handleOtpPaste : undefined}
                       disabled={loading}
-                      className="h-14 w-11 sm:h-15 sm:w-13 rounded-2xl border border-[var(--border)] bg-[var(--input-bg)] text-center font-mono text-2xl font-bold text-[var(--text)] outline-none transition-all focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50 shadow-2xs"
+                      className="h-14 w-11 sm:h-15 sm:w-13 rounded-2xl border border-slate-200 dark:border-[#2b3a58] bg-slate-50/80 dark:bg-[#18233a] text-center font-mono text-2xl font-bold text-slate-900 dark:text-white outline-none transition-all focus:border-[#2c6bed] focus:bg-white dark:focus:bg-[#1c2842] focus:ring-4 focus:ring-[#2c6bed]/15 disabled:opacity-50 shadow-2xs"
                       aria-label={`Digit ${i + 1}`}
                     />
                   ))}
                 </div>
-                <p className="mt-4 text-center text-xs text-[var(--muted)]">
-                  Demo code: <span className="font-mono font-bold text-[var(--text)]">123456</span>
+                <p className="mt-4 text-center text-xs text-slate-500 dark:text-slate-400">
+                  Demo code: <span className="font-mono font-bold text-slate-700 dark:text-slate-200">123456</span>
                 </p>
               </div>
             )}
@@ -346,7 +346,7 @@ export function RegisterForm() {
                 <div>
                   <label
                     htmlFor="reg-displayname"
-                    className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]"
+                    className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
                   >
                     Display name
                   </label>
@@ -361,13 +361,13 @@ export function RegisterForm() {
                     placeholder="e.g. Alice Smith"
                     autoFocus
                     disabled={loading}
-                    className="h-13 sm:h-14 w-full rounded-2xl border border-[var(--border)] bg-[var(--input-bg)] px-4 text-[16px] text-[var(--text)] outline-none transition-all placeholder:text-[14.5px] placeholder:text-[var(--muted)] focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50 shadow-2xs"
+                    className="h-13 sm:h-14 w-full rounded-2xl border border-slate-200 dark:border-[#2b3a58] bg-slate-50/80 dark:bg-[#18233a] px-4 text-[16px] text-slate-900 dark:text-white outline-none transition-all placeholder:text-[14.5px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-[#2c6bed] focus:bg-white dark:focus:bg-[#1c2842] focus:ring-4 focus:ring-[#2c6bed]/15 disabled:opacity-50 shadow-2xs"
                   />
                 </div>
 
                 {/* Avatar Picker Container */}
-                <div className="rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 shadow-2xs">
-                  <p className="mb-3 text-center text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                <div className="rounded-2xl border border-slate-200 dark:border-[#23314d] bg-slate-50/60 dark:bg-[#18233a] p-4 shadow-2xs">
+                  <p className="mb-3 text-center text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     Choose your avatar
                   </p>
                   <AvatarPicker
@@ -383,7 +383,7 @@ export function RegisterForm() {
 
             {/* Error banner */}
             {error && (
-              <div className="mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm leading-snug text-red-500">
+              <div className="mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm leading-snug text-red-600 dark:text-red-400">
                 {error}
               </div>
             )}
@@ -392,7 +392,7 @@ export function RegisterForm() {
             <button
               type="submit"
               disabled={isDisabled}
-              className="flex h-13 sm:h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#2c6bed] text-[16px] font-bold text-white shadow-md transition-all hover:bg-[#1851B4] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
+              className="flex h-13 sm:h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#2c6bed] text-[16px] font-bold text-white shadow-md shadow-[#2c6bed]/25 transition-all hover:bg-[#1851B4] hover:shadow-lg hover:shadow-[#2c6bed]/30 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
             >
               {loading && <Loader2 className="h-5 w-5 animate-spin" />}
               {loading
@@ -405,11 +405,11 @@ export function RegisterForm() {
             </button>
 
             {/* Sign in link */}
-            <p className="mt-5 text-center text-sm text-[var(--muted)]">
+            <p className="mt-5 text-center text-sm text-slate-600 dark:text-slate-400">
               Already have an account?{" "}
               <Link
                 href="/login"
-                className="font-semibold text-[#2c6bed] transition-colors hover:underline"
+                className="font-semibold text-[#2c6bed] hover:text-[#1851B4] dark:hover:text-blue-400 transition-colors hover:underline"
               >
                 Sign in
               </Link>
@@ -417,6 +417,11 @@ export function RegisterForm() {
           </form>
         </div>
       </main>
+
+      {/* ─── AUTH FOOTER: GROUNDS THE VIEWPORT ─── */}
+      <footer className="py-4 text-center text-xs text-slate-400 dark:text-slate-500">
+        Signal Messenger • End-to-end encrypted • 501(c)(3) nonprofit
+      </footer>
     </div>
   );
 }

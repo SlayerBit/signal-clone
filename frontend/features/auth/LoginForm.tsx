@@ -516,35 +516,36 @@ export function LoginForm() {
            STAGE 2 & 3: AUTHENTICATION (IDENTIFY + OTP)
            ═══════════════════════════════════════════════════ */
         <div
-          className={`flex min-h-screen w-full flex-col transition-colors ${
+          className={`flex min-h-screen w-full flex-col justify-between transition-colors ${
             theme === "dark"
-              ? "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#172544] via-[#0f172a] to-[#090d16] text-[#f3f3f6]"
-              : "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#d8e6fe] via-[#edf3fe] to-[#f8faff] text-[#121216]"
+              ? "bg-[#0e1628] text-[#f3f3f6]"
+              : "bg-[#edf2fb] text-[#121216]"
           }`}
         >
           {/* ─── SIMPLIFIED AUTHENTICATION HEADER ─── */}
           <header
             className={`sticky top-0 z-40 flex h-18 w-full items-center justify-between border-b px-6 backdrop-blur-md transition-colors sm:px-10 lg:px-16 ${
               theme === "dark"
-                ? "border-[#27272c] bg-[#121214]/90 text-[#f3f3f6]"
-                : "border-slate-200/80 bg-white/90 text-[#121216]"
+                ? "border-[#202c44] bg-[#121214]/95 text-[#f3f3f6]"
+                : "border-slate-200/80 bg-white/95 text-[#121216]"
             }`}
           >
             {/* Left: Signal Icon + Wordmark */}
-            <div
+            <button
+              type="button"
               onClick={goBackFromAuth}
-              className="flex items-center gap-3 cursor-pointer group"
+              className="flex items-center gap-3 cursor-pointer group focus-visible:outline-none"
               title="Return to Welcome page"
             >
-              <SignalLogo size={34} color={signalBlue} />
+              <SignalLogo size={38} color={signalBlue} />
               <span
-                className={`text-[24px] font-extrabold tracking-tight transition-colors ${
+                className={`text-[26px] font-extrabold tracking-tight transition-colors ${
                   theme === "dark" ? "text-[#f3f3f6]" : "text-[#121216]"
                 }`}
               >
                 Signal
               </span>
-            </div>
+            </button>
 
             {/* Right: Theme Toggle & Back Button */}
             <div className="flex items-center gap-3">
@@ -552,10 +553,10 @@ export function LoginForm() {
               <button
                 type="button"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs shadow-xs transition-colors ${
+                className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium shadow-2xs transition-colors ${
                   theme === "dark"
                     ? "border-[#27272c] bg-[#1a1a1e] text-[#a0a0ab] hover:bg-[#24242a] hover:text-[#f3f3f6]"
-                    : "border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-black"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-black"
                 }`}
                 title="Toggle light/dark theme"
               >
@@ -567,14 +568,14 @@ export function LoginForm() {
                 <span className="capitalize">{theme === "dark" ? "Light" : "Dark"}</span>
               </button>
 
-              {/* Back button */}
+              {/* Back to Welcome navigation */}
               <button
                 type="button"
                 onClick={goBackFromAuth}
-                className={`group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                className={`group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold shadow-2xs transition-colors ${
                   theme === "dark"
                     ? "border-[#27272c] bg-[#1a1a1e] text-[#a0a0ab] hover:bg-[#24242a] hover:text-white"
-                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-black shadow-xs"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-black"
                 }`}
                 title={stage === "otp" ? "Back to sign in" : "Back to welcome page"}
               >
@@ -585,28 +586,28 @@ export function LoginForm() {
           </header>
 
           {/* ─── MAIN AUTHENTICATION CARD / CONTENT ─── */}
-          <main className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:py-12 animate-in fade-in duration-200">
+          <main className="flex flex-1 items-center justify-center px-4 py-8 sm:py-12 animate-in fade-in duration-200">
             <div
-              className={`w-full max-w-[460px] rounded-3xl border p-7 sm:p-9 shadow-2xl backdrop-blur-xl transition-all ${
+              className={`w-full max-w-[440px] rounded-3xl border p-7 sm:p-9 transition-all ${
                 theme === "dark"
-                  ? "border-[#27272c]/90 bg-[#16171c]/90 shadow-black/50"
-                  : "border-slate-200/80 bg-white/95 shadow-blue-950/5"
+                  ? "border-[#22314e] bg-[#141d30] shadow-[0_8px_30px_rgba(0,0,0,0.45)]"
+                  : "border-[#d2dff4] bg-white shadow-[0_8px_30px_rgba(24,81,180,0.06)]"
               }`}
             >
               {/* Card Header: Title & Subtitle */}
               <div className="mb-6 text-left">
                 {stage === "identify" ? (
                   <>
-                    <h2
-                      className={`text-2xl sm:text-[28px] font-extrabold leading-tight tracking-tight ${
+                    <h1
+                      className={`text-[28px] sm:text-[30px] font-extrabold leading-tight tracking-tight ${
                         theme === "dark" ? "text-white" : "text-[#111827]"
                       }`}
                     >
                       Sign in to Signal
-                    </h2>
+                    </h1>
                     <p
-                      className={`mt-2 text-[15px] leading-relaxed ${
-                        theme === "dark" ? "text-slate-300" : "text-[#1f2937]/80"
+                      className={`mt-2 text-[14.5px] leading-relaxed ${
+                        theme === "dark" ? "text-slate-300" : "text-slate-600"
                       }`}
                     >
                       Enter your username or phone number to continue.
@@ -614,16 +615,16 @@ export function LoginForm() {
                   </>
                 ) : (
                   <>
-                    <h2
-                      className={`text-2xl sm:text-[28px] font-extrabold leading-tight tracking-tight ${
+                    <h1
+                      className={`text-[28px] sm:text-[30px] font-extrabold leading-tight tracking-tight ${
                         theme === "dark" ? "text-white" : "text-[#111827]"
                       }`}
                     >
                       Enter verification code
-                    </h2>
+                    </h1>
                     <p
-                      className={`mt-2 text-[15px] leading-relaxed ${
-                        theme === "dark" ? "text-slate-300" : "text-[#1f2937]/80"
+                      className={`mt-2 text-[14.5px] leading-relaxed ${
+                        theme === "dark" ? "text-slate-300" : "text-slate-600"
                       }`}
                     >
                       Enter the 6-digit code to continue as{" "}
@@ -641,7 +642,7 @@ export function LoginForm() {
                   <div className="mb-5">
                     <label
                       htmlFor="auth-identifier"
-                      className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]"
+                      className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400"
                     >
                       Username or phone number
                     </label>
@@ -657,12 +658,12 @@ export function LoginForm() {
                       autoComplete="username"
                       autoFocus
                       disabled={loading}
-                      className="h-13 sm:h-14 w-full rounded-2xl border border-[var(--border)] bg-[var(--input-bg)] px-4 text-[16px] text-[var(--text)] outline-none transition-all placeholder:text-[14.5px] placeholder:text-[var(--muted)] focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50 shadow-2xs"
+                      className="h-13 sm:h-14 w-full rounded-2xl border border-slate-200 dark:border-[#2b3a58] bg-slate-50/80 dark:bg-[#18233a] px-4 text-[16px] text-slate-900 dark:text-white outline-none transition-all placeholder:text-[14.5px] placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-[#2c6bed] focus:bg-white dark:focus:bg-[#1c2842] focus:ring-4 focus:ring-[#2c6bed]/15 disabled:opacity-50 shadow-2xs"
                     />
                   </div>
 
                   {error && (
-                    <div className="mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm leading-snug text-red-500">
+                    <div className="mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm leading-snug text-red-600 dark:text-red-400">
                       {error}
                     </div>
                   )}
@@ -670,7 +671,7 @@ export function LoginForm() {
                   <button
                     type="submit"
                     disabled={loading || !identifier.trim()}
-                    className="flex h-13 sm:h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#2c6bed] text-[16px] font-bold text-white shadow-md transition-all hover:bg-[#1851B4] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
+                    className="flex h-13 sm:h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#2c6bed] text-[16px] font-bold text-white shadow-md shadow-[#2c6bed]/25 transition-all hover:bg-[#1851B4] hover:shadow-lg hover:shadow-[#2c6bed]/30 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
                   >
                     {loading && <Loader2 className="h-5 w-5 animate-spin" />}
                     {loading ? "Verifying…" : "Continue"}
@@ -679,24 +680,24 @@ export function LoginForm() {
                   <div className="mt-5 text-center">
                     <Link
                       href="/register"
-                      className="text-sm font-semibold text-[#2c6bed] transition-colors hover:underline"
+                      className="text-sm font-semibold text-[#2c6bed] hover:text-[#1851B4] dark:hover:text-blue-400 transition-colors hover:underline"
                     >
                       Don&apos;t have an account? Create one
                     </Link>
                   </div>
 
                   {/* Demo Accounts Pill Box */}
-                  <div className="mt-7 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 shadow-2xs">
-                    <div className="mb-2.5 flex items-center justify-between text-xs font-medium text-[var(--muted)]">
-                      <span className="flex items-center gap-1.5 uppercase tracking-wider font-semibold">
+                  <div className="mt-7 pt-5 border-t border-slate-200/80 dark:border-[#202c44]">
+                    <div className="mb-2.5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                      <span className="flex items-center gap-1.5 text-[11px] font-semibold tracking-wider uppercase">
                         <KeyRound className="h-3.5 w-3.5 text-[#2c6bed]" />
                         Quick Test Accounts
                       </span>
-                      <span className="font-mono text-[11px] rounded-md bg-[var(--input-bg)] px-2 py-0.5 border border-[var(--border)]">
+                      <span className="font-mono text-[11px] rounded-md bg-slate-100 dark:bg-[#1a243a] px-2 py-0.5 border border-slate-200 dark:border-[#2b3a58] text-slate-600 dark:text-slate-300">
                         OTP: 123456
                       </span>
                     </div>
-                    <div className="flex items-center gap-2.5">
+                    <div className="grid grid-cols-2 gap-2.5">
                       {[
                         { key: "om", label: "Om" },
                         { key: "rahul", label: "Rahul" },
@@ -705,10 +706,10 @@ export function LoginForm() {
                           key={user.key}
                           type="button"
                           onClick={() => fillDemoUser(user.key)}
-                          className={`flex-1 rounded-xl border py-2 text-xs font-semibold transition-all ${
+                          className={`rounded-xl border py-2.5 text-xs font-semibold transition-all text-center ${
                             identifier === user.key
-                              ? "border-[#2c6bed] bg-[#2c6bed]/10 text-[#2c6bed] shadow-xs"
-                              : "border-[var(--border)] bg-transparent text-[var(--text-secondary)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
+                              ? "border-[#2c6bed] bg-[#2c6bed]/10 text-[#2c6bed] shadow-2xs font-bold"
+                              : "border-slate-200 dark:border-[#2a3854] bg-slate-50/60 dark:bg-[#161f33] text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-500 hover:bg-slate-100/80 dark:hover:bg-[#1d2944]"
                           }`}
                         >
                           {user.label}
@@ -742,14 +743,14 @@ export function LoginForm() {
                         onKeyDown={(e) => handleOtpKeyDown(i, e)}
                         onPaste={i === 0 ? handleOtpPaste : undefined}
                         disabled={loading}
-                        className="h-14 w-11 sm:h-15 sm:w-13 rounded-2xl border border-[var(--border)] bg-[var(--input-bg)] text-center font-mono text-2xl font-bold text-[var(--text)] outline-none transition-all focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50 shadow-2xs"
+                        className="h-14 w-11 sm:h-15 sm:w-13 rounded-2xl border border-slate-200 dark:border-[#2b3a58] bg-slate-50/80 dark:bg-[#18233a] text-center font-mono text-2xl font-bold text-slate-900 dark:text-white outline-none transition-all focus:border-[#2c6bed] focus:bg-white dark:focus:bg-[#1c2842] focus:ring-4 focus:ring-[#2c6bed]/15 disabled:opacity-50 shadow-2xs"
                         aria-label={`Digit ${i + 1}`}
                       />
                     ))}
                   </div>
 
                   {error && (
-                    <div className="mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm leading-snug text-red-500">
+                    <div className="mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm leading-snug text-red-600 dark:text-red-400">
                       {error}
                     </div>
                   )}
@@ -757,20 +758,25 @@ export function LoginForm() {
                   <button
                     type="submit"
                     disabled={loading || otp.join("").length !== 6}
-                    className="flex h-13 sm:h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#2c6bed] text-[16px] font-bold text-white shadow-md transition-all hover:bg-[#1851B4] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
+                    className="flex h-13 sm:h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#2c6bed] text-[16px] font-bold text-white shadow-md shadow-[#2c6bed]/25 transition-all hover:bg-[#1851B4] hover:shadow-lg hover:shadow-[#2c6bed]/30 active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
                   >
                     {loading && <Loader2 className="h-5 w-5 animate-spin" />}
                     {loading ? "Verifying…" : "Verify & Sign In"}
                   </button>
 
-                  <p className="mt-5 text-center text-xs text-[var(--muted)]">
+                  <p className="mt-5 text-center text-xs text-slate-500 dark:text-slate-400">
                     Demo verification code:{" "}
-                    <span className="font-mono font-bold text-[var(--text)]">123456</span>
+                    <span className="font-mono font-bold text-slate-700 dark:text-slate-200">123456</span>
                   </p>
                 </form>
               )}
             </div>
           </main>
+
+          {/* ─── AUTH FOOTER: GROUNDS THE VIEWPORT ─── */}
+          <footer className="py-4 text-center text-xs text-slate-400 dark:text-slate-500">
+            Signal Messenger • End-to-end encrypted • 501(c)(3) nonprofit
+          </footer>
         </div>
       )}
 
