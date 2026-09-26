@@ -44,7 +44,7 @@ export function ChatsSidebar({ meId }: { meId: number }) {
 
   if (newChat) {
     return (
-      <aside className="flex h-full w-[320px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--panel)]">
+      <aside className="sidebar-responsive flex h-full w-[320px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--panel)]">
         <NewChatView onBack={() => setNewChat(false)} />
       </aside>
     );
@@ -55,7 +55,7 @@ export function ChatsSidebar({ meId }: { meId: number }) {
     : conversations;
 
   return (
-    <aside className="relative flex h-full w-[320px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--panel)]">
+    <aside className="sidebar-responsive relative flex h-full w-[320px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--panel)]">
       <div className="flex items-center justify-between px-4 py-4">
         <h1 className="text-xl font-bold">Chats</h1>
         <div className="relative flex gap-1">

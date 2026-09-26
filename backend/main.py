@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
     if settings.seed_on_startup:
         from seed.run import seed_if_empty
 
-        seed_if_empty()
+        seed_if_empty(engine)
     yield
 
 

@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, sessionmaker
 
 
 from app.core.security import hash_password
@@ -22,8 +22,10 @@ from app.models.entities import (
 from app.services.conversation_service import direct_key
 
 
-def seed_if_empty() -> None:
-    db = SessionLocal()
+def seed_if_empty(db_engine=None) -> None:
+    target_engine = db_engine or engine
+    session_factory = sessionmaker(autocommit=False, autoflush=False, bind=target_engine)
+    db = session_factory()
     try:
         if db.query(User).count() > 0:
             return

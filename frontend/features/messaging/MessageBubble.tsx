@@ -158,7 +158,7 @@ export function MessageBubble({
   return (
     <div
       id={`msg-${message.id}`}
-      className={`group relative flex w-full ${isOwn ? "justify-end" : "justify-start"} py-0.5`}
+      className={`group relative flex w-full ${isOwn ? "justify-end" : "justify-start"}`}
       onMouseEnter={() => {
         cancelClose();
         setHovered(true);
@@ -173,7 +173,7 @@ export function MessageBubble({
     >
       <div
         ref={containerRef}
-        className={`relative flex max-w-[min(540px,78%)] items-end gap-1.5 ${
+        className={`relative flex max-w-[min(640px,80%)] sm:max-w-[min(720px,72%)] items-end gap-1.5 ${
           isOwn ? "flex-row" : "flex-row-reverse"
         }`}
       >

@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
+  ArrowLeft,
   Bell,
   BellOff,
   Clock,
@@ -35,6 +37,7 @@ export function ChatHeader({
   onOpenMembers?: () => void;
   onOpenCallModal: (info: CallModalInfo) => void;
 }) {
+  const router = useRouter();
   const [overflowOpen, setOverflowOpen] = useState(false);
   const [muted, setMuted] = useState(false);
   const [infoModal, setInfoModal] = useState<{ title: string; message: string } | null>(null);
@@ -63,7 +66,16 @@ export function ChatHeader({
 
   return (
     <header className="relative flex h-14 shrink-0 items-center justify-between border-b border-[var(--border)] bg-[var(--panel)] px-4">
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex items-center gap-2 min-w-0">
+        {/* Mobile-only back button */}
+        <button
+          type="button"
+          className="show-mobile-only shrink-0 rounded-lg p-1.5 text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)] transition-colors"
+          onClick={() => router.push("/chats")}
+          title="Back to chats"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </button>
         <Avatar user={headerUser} size={38} />
         <div className="min-w-0">
           <h2 className="truncate font-semibold text-[15px] leading-tight text-[var(--text)]">

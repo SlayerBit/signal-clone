@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ArrowLeft,
   Bell,
   Check,
   Database,
@@ -110,6 +111,7 @@ export function SettingsView({ user }: { user: UserType }) {
     setTimeout(() => setCopiedSafetyNumber(false), 2000);
   };
 
+  const isRootSettings = pathname === "/settings" || pathname === "/settings/";
   const rawSection = pathname.replace(/^\/settings\/?/, "").split("/")[0];
   const section =
     !rawSection || rawSection === "settings" || rawSection === "profile" || rawSection === "account"
@@ -135,7 +137,11 @@ export function SettingsView({ user }: { user: UserType }) {
   return (
     <div className="flex h-full flex-1 overflow-hidden bg-[var(--bg)]">
       {/* Settings Navigation Sidebar */}
-      <aside className="w-[280px] shrink-0 border-r border-[var(--border)] bg-[var(--panel)] p-4 overflow-y-auto">
+      <aside
+        className={`${
+          isRootSettings ? "sidebar-responsive" : "hide-mobile"
+        } w-[280px] shrink-0 border-r border-[var(--border)] bg-[var(--panel)] p-4 overflow-y-auto`}
+      >
         <h1 className="mb-4 text-xl font-bold text-[var(--text)]">Settings</h1>
 
         {/* Profile Card in sidebar */}
@@ -182,8 +188,21 @@ export function SettingsView({ user }: { user: UserType }) {
       </aside>
 
       {/* Main Settings Content Area */}
-      <main className="flex flex-1 flex-col overflow-y-auto p-8">
+      <main
+        className={`${
+          isRootSettings ? "hide-mobile" : "flex"
+        } flex-1 flex-col overflow-y-auto p-4 sm:p-8`}
+      >
         <div className="mx-auto w-full max-w-2xl space-y-6">
+          {!isRootSettings && (
+            <Link
+              href="/settings"
+              className="show-mobile-only inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--accent)] hover:underline mb-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Back to Settings</span>
+            </Link>
+          )}
           <h2 className="text-xl font-bold capitalize text-[var(--text)]">
             {section.replace("-", " ")}
           </h2>

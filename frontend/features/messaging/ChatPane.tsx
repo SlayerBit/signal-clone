@@ -238,13 +238,17 @@ export function ChatPane({
             </p>
           </div>
         ) : (
-          <div className="mx-auto flex max-w-3xl flex-col gap-2">
+          <div className="mx-auto flex w-full max-w-5xl flex-col px-2 sm:px-6">
             {messages.map((m, i) => {
               const prev = messages[i - 1];
+              const isSameSender = prev && prev.sender_id === m.sender_id;
               const showSender =
                 activeDetail.type === "group" && (!prev || prev.sender_id !== m.sender_id);
+              // Consecutive messages from same sender: ~6px gap (mt-1.5); Separate message groups: ~16px gap (mt-4)
+              const spacingClass = i === 0 ? "mt-1" : isSameSender ? "mt-1.5" : "mt-4";
+
               return (
-                <div key={m.client_id ?? m.id} className="relative">
+                <div key={m.client_id ?? m.id} className={`relative w-full ${spacingClass}`}>
                   <MessageBubble
                     message={m}
                     isOwn={m.sender_id === me.id}
@@ -257,7 +261,7 @@ export function ChatPane({
               );
             })}
             {typingIds.length > 0 && (
-              <div className="flex items-center gap-2 px-2 py-1 text-xs italic text-[var(--muted)] animate-pulse">
+              <div className="mt-2 flex items-center gap-2 px-2 py-1 text-xs italic text-[var(--muted)] animate-pulse">
                 <span>{typingLabel(typingIds, members, me.id)}</span>
               </div>
             )}

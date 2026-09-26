@@ -15,7 +15,8 @@ class Base(DeclarativeBase):
 
 
 def get_db() -> Generator:
-    db = SessionLocal()
+    session_factory = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    db = session_factory()
     try:
         yield db
     finally:

@@ -23,7 +23,7 @@ export function RegisterForm() {
   const setTheme = useAppStore((s) => s.setTheme);
   const { success, error: toastError } = useToast();
 
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState<0 | 1 | 2>(0);
   const [identifier, setIdentifier] = useState("");
   const [pending, setPending] = useState("");
   const [setup, setSetup] = useState("");
@@ -44,22 +44,6 @@ export function RegisterForm() {
   }, [step]);
 
   const signalBlue = "#2c6bed";
-  const signalBlueHover = "#1851B4";
-
-  const btnHandlers = {
-    onMouseEnter: (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (!loading) e.currentTarget.style.backgroundColor = signalBlueHover;
-    },
-    onMouseLeave: (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.currentTarget.style.backgroundColor = signalBlue;
-    },
-    onMouseDown: (e: React.MouseEvent<HTMLButtonElement>) => {
-      if (!loading) e.currentTarget.style.transform = "scale(0.985)";
-    },
-    onMouseUp: (e: React.MouseEvent<HTMLButtonElement>) => {
-      e.currentTarget.style.transform = "scale(1)";
-    },
-  };
 
   /* ── OTP handlers ── */
   const handleOtpChange = useCallback(
@@ -100,7 +84,7 @@ export function RegisterForm() {
     [otp]
   );
 
-  /* ── Submit ── */
+  /* ── Submit handler ── */
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -151,11 +135,10 @@ export function RegisterForm() {
     }
   }
 
-  /* ── Step titles ── */
   const titles = [
     { heading: "Create your account", sub: "Enter your username or phone number to get started." },
     { heading: "Enter verification code", sub: `Enter the 6-digit code to verify ${identifier || "your identity"}.` },
-    { heading: "Set up your profile", sub: "Choose a name and avatar for your Signal profile." },
+    { heading: "Set up your profile", sub: "Choose your name and avatar for your Signal profile." },
   ];
 
   const isDisabled =
@@ -165,40 +148,28 @@ export function RegisterForm() {
     (step === 2 && !displayName.trim());
 
   return (
-    <div className="relative flex h-screen w-full flex-col overflow-hidden">
+    <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-[var(--bg)] select-none">
       {/* Theme toggle */}
-      <div className="absolute top-4 right-5 z-20">
+      <div className="absolute top-4 right-5 z-30">
         <button
           type="button"
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs transition-colors"
-          style={{
-            color: "var(--text-secondary)",
-            background: "var(--panel)",
-            border: "1px solid var(--border)",
-          }}
+          className="flex items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--panel)] px-3.5 py-1.5 text-xs font-medium text-[var(--text-secondary)] shadow-xs transition-colors hover:bg-[var(--hover)] hover:text-[var(--text)]"
+          title="Toggle light/dark theme"
         >
           {theme === "dark" ? (
-            <Sun className="h-3.5 w-3.5" />
+            <Sun className="h-3.5 w-3.5 text-amber-400" />
           ) : (
-            <Moon className="h-3.5 w-3.5" />
+            <Moon className="h-3.5 w-3.5 text-indigo-500" />
           )}
-          <span className="capitalize">
-            {theme === "dark" ? "Light" : "Dark"} mode
-          </span>
+          <span className="capitalize">{theme === "dark" ? "Light" : "Dark"} mode</span>
         </button>
       </div>
 
-      <div
-        className="flex h-full flex-col items-center px-6 animate-in fade-in duration-200 overflow-y-auto"
-        style={{ background: "var(--bg)" }}
-      >
-        <div
-          className="flex w-full max-w-[420px] flex-1 flex-col justify-center"
-          style={{ marginTop: "-3vh" }}
-        >
+      <div className="flex min-h-screen w-full flex-col items-center justify-center px-6 py-12 animate-in fade-in duration-200">
+        <div className="relative flex w-full max-w-[420px] flex-col">
           {/* Back navigation */}
-          <div className="mb-8">
+          <div className="mb-6">
             {step > 0 ? (
               <button
                 type="button"
@@ -207,327 +178,186 @@ export function RegisterForm() {
                   setStep((s) => Math.max(0, s - 1) as 0 | 1 | 2);
                   if (step === 1) setOtp(["", "", "", "", "", ""]);
                 }}
-                className="flex items-center gap-1.5 rounded-lg px-1 py-1 text-[13px] transition-colors"
-                style={{ color: "var(--muted)" }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = "var(--text)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "var(--muted)")
-                }
+                className="group inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[13.5px] font-medium text-[var(--muted)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--text)]"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
                 <span>Back</span>
               </button>
             ) : (
               <Link
                 href="/login"
-                className="flex items-center gap-1.5 rounded-lg px-1 py-1 text-[13px] transition-colors"
-                style={{ color: "var(--muted)" }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = "var(--text)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = "var(--muted)")
-                }
+                className="group inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[13.5px] font-medium text-[var(--muted)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--text)]"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
                 <span>Back to Sign In</span>
               </Link>
             )}
           </div>
 
-          {/* Auth surface */}
-          <div className="flex flex-col items-center">
-            {/* Logo + Wordmark */}
-            <div className="mb-6 flex items-center gap-2.5">
-              <SignalLogo size={28} color={signalBlue} />
-              <span
-                className="text-[22px] font-extrabold tracking-tight"
-                style={{ color: "var(--text)" }}
-              >
+          {/* Branding */}
+          <div className="mb-6 flex flex-col items-center text-center">
+            <div className="mb-4 flex items-center gap-2.5">
+              <SignalLogo size={36} color={signalBlue} />
+              <span className="text-[26px] font-extrabold tracking-tight text-[var(--text)]">
                 Signal
               </span>
             </div>
 
-            <form onSubmit={submit} className="w-full" noValidate>
-              {/* Title */}
-              <div className="mb-6 text-center">
-                <h1
-                  className="text-[24px] font-extrabold leading-tight tracking-tight"
-                  style={{ color: "var(--text)" }}
+            <h1 className="text-[26px] font-extrabold leading-tight tracking-tight text-[var(--text)]">
+              {titles[step].heading}
+            </h1>
+            <p className="mt-1.5 text-[14px] leading-relaxed text-[var(--muted)]">
+              {titles[step].sub}
+            </p>
+
+            {/* Stepper Indicator */}
+            <div className="mt-4 flex items-center justify-center gap-2">
+              {[0, 1, 2].map((s) => (
+                <div
+                  key={s}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    s === step
+                      ? "w-8 bg-[#2c6bed]"
+                      : s < step
+                      ? "w-4 bg-[#2c6bed]/50"
+                      : "w-4 bg-[var(--border)]"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <form onSubmit={submit} className="w-full" noValidate>
+            {/* Step 0: Identifier */}
+            {step === 0 && (
+              <div className="mb-4">
+                <label
+                  htmlFor="reg-identifier"
+                  className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]"
                 >
-                  {titles[step].heading}
-                </h1>
-                <p
-                  className="mt-1.5 text-[14px] leading-relaxed"
-                  style={{ color: "var(--muted)" }}
-                >
-                  {titles[step].sub}
-                </p>
-                {/* Step indicator */}
-                <div className="mt-4 flex items-center justify-center gap-2">
-                  {[0, 1, 2].map((s) => (
-                    <div
-                      key={s}
-                      className="h-1 rounded-full transition-all duration-300"
-                      style={{
-                        width: s === step ? "24px" : "8px",
-                        background:
-                          s <= step
-                            ? signalBlue
-                            : theme === "dark"
-                            ? "rgba(255,255,255,0.12)"
-                            : "rgba(0,0,0,0.1)",
+                  Username or phone
+                </label>
+                <input
+                  id="reg-identifier"
+                  type="text"
+                  value={identifier}
+                  onChange={(e) => {
+                    setIdentifier(e.target.value);
+                    if (error) setError("");
+                  }}
+                  placeholder="e.g. alice or +919812345678"
+                  autoComplete="username"
+                  autoFocus
+                  disabled={loading}
+                  className="h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-4 text-[15px] text-[var(--text)] outline-none transition-all placeholder:text-[13.5px] placeholder:text-[var(--muted)] focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50"
+                />
+              </div>
+            )}
+
+            {/* Step 1: OTP */}
+            {step === 1 && (
+              <div className="mb-5">
+                <div className="flex items-center justify-center gap-2.5 sm:gap-3">
+                  {otp.map((digit, i) => (
+                    <input
+                      key={i}
+                      ref={(el) => {
+                        otpRefs.current[i] = el;
                       }}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(i, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                      onPaste={i === 0 ? handleOtpPaste : undefined}
+                      disabled={loading}
+                      className="h-13 w-11 sm:h-14 sm:w-12 rounded-xl border border-[var(--border)] bg-[var(--input-bg)] text-center font-mono text-xl font-bold text-[var(--text)] outline-none transition-all focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50"
+                      aria-label={`Digit ${i + 1}`}
                     />
                   ))}
                 </div>
+                <p className="mt-4 text-center text-[12px] text-[var(--muted)]">
+                  Demo code: <span className="font-mono font-medium text-[var(--text)]">123456</span>
+                </p>
               </div>
+            )}
 
-              {/* ── Step 0: Identifier ── */}
-              {step === 0 && (
-                <div className="mb-4">
+            {/* Step 2: Display Name + Avatar */}
+            {step === 2 && (
+              <div className="mb-4 space-y-4">
+                <div>
                   <label
-                    htmlFor="reg-identifier"
-                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider"
-                    style={{ color: "var(--text-secondary)" }}
+                    htmlFor="reg-displayname"
+                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]"
                   >
-                    Username or phone
+                    Display name
                   </label>
                   <input
-                    id="reg-identifier"
+                    id="reg-displayname"
                     type="text"
-                    value={identifier}
+                    value={displayName}
                     onChange={(e) => {
-                      setIdentifier(e.target.value);
+                      setDisplayName(e.target.value);
                       if (error) setError("");
                     }}
-                    placeholder="e.g. alice or +919812345678"
-                    autoComplete="username"
+                    placeholder="e.g. Alice Smith"
                     autoFocus
                     disabled={loading}
-                    className="w-full rounded-lg border px-4 py-3 text-[15px] outline-none transition-all duration-150 placeholder:text-[13px]"
-                    style={{
-                      borderColor: error
-                        ? theme === "dark"
-                          ? "#f87171"
-                          : "#dc2626"
-                        : "var(--border)",
-                      background: "var(--input-bg)",
-                      color: "var(--text)",
-                    }}
-                    onFocus={(e) => {
-                      if (!error) e.target.style.borderColor = signalBlue;
-                      e.target.style.boxShadow = `0 0 0 3px ${
-                        error
-                          ? "rgba(239,68,68,0.1)"
-                          : "rgba(44,107,237,0.12)"
-                      }`;
-                    }}
-                    onBlur={(e) => {
-                      e.target.style.borderColor = error
-                        ? theme === "dark"
-                          ? "#f87171"
-                          : "#dc2626"
-                        : "var(--border)";
-                      e.target.style.boxShadow = "none";
-                    }}
+                    className="h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-4 text-[15px] text-[var(--text)] outline-none transition-all placeholder:text-[13.5px] placeholder:text-[var(--muted)] focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50"
                   />
                 </div>
-              )}
 
-              {/* ── Step 1: OTP ── */}
-              {step === 1 && (
-                <div className="mb-5">
-                  <div className="flex items-center justify-center gap-2.5">
-                    {otp.map((digit, i) => (
-                      <input
-                        key={i}
-                        ref={(el) => {
-                          otpRefs.current[i] = el;
-                        }}
-                        type="text"
-                        inputMode="numeric"
-                        maxLength={1}
-                        value={digit}
-                        onChange={(e) => handleOtpChange(i, e.target.value)}
-                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                        onPaste={i === 0 ? handleOtpPaste : undefined}
-                        disabled={loading}
-                        className="h-[52px] w-[46px] rounded-lg border text-center font-mono text-xl font-bold outline-none transition-all duration-150"
-                        style={{
-                          borderColor: error
-                            ? theme === "dark"
-                              ? "#f87171"
-                              : "#dc2626"
-                            : digit
-                            ? signalBlue
-                            : "var(--border)",
-                          background: "var(--input-bg)",
-                          color: "var(--text)",
-                          boxShadow: digit
-                            ? "0 0 0 2px rgba(44,107,237,0.1)"
-                            : "none",
-                        }}
-                        onFocus={(e) => {
-                          e.target.style.borderColor = signalBlue;
-                          e.target.style.boxShadow =
-                            "0 0 0 3px rgba(44,107,237,0.12)";
-                        }}
-                        onBlur={(e) => {
-                          e.target.style.borderColor = digit
-                            ? signalBlue
-                            : "var(--border)";
-                          e.target.style.boxShadow = digit
-                            ? "0 0 0 2px rgba(44,107,237,0.1)"
-                            : "none";
-                        }}
-                        aria-label={`Digit ${i + 1}`}
-                      />
-                    ))}
-                  </div>
-                  <p
-                    className="mt-3 text-center text-[12px]"
-                    style={{ color: "var(--muted)", opacity: 0.6 }}
-                  >
-                    Demo code:{" "}
-                    <span className="font-mono font-medium">123456</span>
+                {/* Avatar Picker Container */}
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-4">
+                  <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]">
+                    Choose your avatar
                   </p>
+                  <AvatarPicker
+                    selectedPresetId={avatarId}
+                    selectedColor={avatarColor}
+                    onPresetChange={setAvatarId}
+                    onColorChange={setAvatarColor}
+                    displayName={displayName || "?"}
+                  />
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* ── Step 2: Display Name + Avatar ── */}
-              {step === 2 && (
-                <div className="mb-4 space-y-5">
-                  <div>
-                    <label
-                      htmlFor="reg-displayname"
-                      className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider"
-                      style={{ color: "var(--text-secondary)" }}
-                    >
-                      Display name
-                    </label>
-                    <input
-                      id="reg-displayname"
-                      type="text"
-                      value={displayName}
-                      onChange={(e) => {
-                        setDisplayName(e.target.value);
-                        if (error) setError("");
-                      }}
-                      placeholder="e.g. Alice Smith"
-                      autoFocus
-                      disabled={loading}
-                      className="w-full rounded-lg border px-4 py-3 text-[15px] outline-none transition-all duration-150 placeholder:text-[13px]"
-                      style={{
-                        borderColor: error
-                          ? theme === "dark"
-                            ? "#f87171"
-                            : "#dc2626"
-                          : "var(--border)",
-                        background: "var(--input-bg)",
-                        color: "var(--text)",
-                      }}
-                      onFocus={(e) => {
-                        if (!error) e.target.style.borderColor = signalBlue;
-                        e.target.style.boxShadow = `0 0 0 3px ${
-                          error
-                            ? "rgba(239,68,68,0.1)"
-                            : "rgba(44,107,237,0.12)"
-                        }`;
-                      }}
-                      onBlur={(e) => {
-                        e.target.style.borderColor = error
-                          ? theme === "dark"
-                            ? "#f87171"
-                            : "#dc2626"
-                          : "var(--border)";
-                        e.target.style.boxShadow = "none";
-                      }}
-                    />
-                  </div>
+            {/* Error banner */}
+            {error && (
+              <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-3.5 py-2.5 text-center text-[13px] leading-snug text-red-500">
+                {error}
+              </div>
+            )}
 
-                  {/* Avatar Picker */}
-                  <div
-                    className="rounded-xl border p-4"
-                    style={{
-                      borderColor: "var(--border)",
-                      background: "var(--input-bg)",
-                    }}
-                  >
-                    <p
-                      className="mb-3 text-center text-[11px] font-semibold uppercase tracking-wider"
-                      style={{ color: "var(--text-secondary)" }}
-                    >
-                      Choose your avatar
-                    </p>
-                    <AvatarPicker
-                      selectedPresetId={avatarId}
-                      selectedColor={avatarColor}
-                      onPresetChange={setAvatarId}
-                      onColorChange={setAvatarColor}
-                      displayName={displayName || "?"}
-                    />
-                  </div>
-                </div>
-              )}
+            {/* Primary Action Button */}
+            <button
+              type="submit"
+              disabled={isDisabled}
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#2c6bed] text-[15px] font-semibold text-white shadow-sm transition-all hover:bg-[#1851B4] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
+            >
+              {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {loading
+                ? "Verifying…"
+                : step === 2
+                ? "Finish & Enter Signal"
+                : step === 1
+                ? "Verify"
+                : "Continue"}
+            </button>
 
-              {/* Error */}
-              {error && (
-                <div
-                  className="mb-4 rounded-lg px-3 py-2.5 text-[13px] leading-snug"
-                  style={{
-                    background:
-                      theme === "dark"
-                        ? "rgba(239,68,68,0.08)"
-                        : "rgba(239,68,68,0.05)",
-                    color: theme === "dark" ? "#f87171" : "#dc2626",
-                    border: `1px solid ${
-                      theme === "dark"
-                        ? "rgba(239,68,68,0.15)"
-                        : "rgba(239,68,68,0.12)"
-                    }`,
-                  }}
-                >
-                  {error}
-                </div>
-              )}
-
-              {/* Submit button */}
-              <button
-                type="submit"
-                disabled={isDisabled}
-                className="flex w-full items-center justify-center gap-2 rounded-lg py-3 text-[15px] font-semibold text-white transition-all disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2c6bed]"
-                style={{ backgroundColor: signalBlue }}
-                {...btnHandlers}
+            {/* Sign in link */}
+            <p className="mt-4 text-center text-[13px] text-[var(--muted)]">
+              Already have an account?{" "}
+              <Link
+                href="/login"
+                className="font-medium text-[#2c6bed] transition-colors hover:underline hover:opacity-90"
               >
-                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                {loading
-                  ? "Verifying…"
-                  : step === 2
-                  ? "Finish & Enter Signal"
-                  : step === 1
-                  ? "Verify"
-                  : "Continue"}
-              </button>
-
-              {/* Sign in link */}
-              <p
-                className="mt-4 text-center text-[13px]"
-                style={{ color: "var(--muted)" }}
-              >
-                Already have an account?{" "}
-                <Link
-                  href="/login"
-                  className="font-semibold hover:underline"
-                  style={{ color: signalBlue }}
-                >
-                  Sign in
-                </Link>
-              </p>
-            </form>
-          </div>
+                Sign in
+              </Link>
+            </p>
+          </form>
         </div>
       </div>
     </div>

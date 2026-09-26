@@ -12,7 +12,7 @@ export default function StoriesPage() {
   return (
     <div className="flex h-full flex-1 overflow-hidden bg-[var(--bg)]">
       {/* Stories Sidebar */}
-      <aside className="flex w-[320px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--panel)]">
+      <aside className="sidebar-responsive flex h-full w-[320px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--panel)]">
         <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3.5">
           <h1 className="text-xl font-bold text-[var(--text)]">Stories</h1>
           <button
@@ -68,7 +68,7 @@ export default function StoriesPage() {
       </aside>
 
       {/* Main Stories Content Area */}
-      <main className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+      <main className="hide-mobile flex flex-1 flex-col items-center justify-center p-8 text-center">
         <div className="mx-auto max-w-sm">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--accent-light)] text-[var(--accent)] shadow-xs">
             <Smartphone className="h-8 w-8 stroke-[1.5]" />
