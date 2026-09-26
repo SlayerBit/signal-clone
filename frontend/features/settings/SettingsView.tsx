@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ArrowLeft,
   Bell,
+  Camera,
   Check,
   Database,
   Eye,
@@ -15,6 +16,7 @@ import {
   MessageSquare,
   Moon,
   Monitor,
+  Palette,
   Phone,
   Settings as SettingsIcon,
   ShieldCheck,
@@ -24,6 +26,7 @@ import {
   User,
   Copy,
   Loader2,
+  X,
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { AvatarPicker } from "@/components/ui/AvatarPicker";
@@ -72,6 +75,35 @@ export function SettingsView({ user }: { user: UserType }) {
   const [avatarColor, setAvatarColor] = useState(appUser.avatar_color || "#2c6bed");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [copiedSafetyNumber, setCopiedSafetyNumber] = useState(false);
+
+  // Avatar Modal State
+  const [avatarModalOpen, setAvatarModalOpen] = useState(false);
+  const [tempAvatarId, setTempAvatarId] = useState<string | null>(avatarId);
+  const [tempAvatarColor, setTempAvatarColor] = useState(avatarColor);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && avatarModalOpen) {
+        setAvatarModalOpen(false);
+      }
+    };
+    if (avatarModalOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [avatarModalOpen]);
+
+  const handleOpenAvatarModal = () => {
+    setTempAvatarId(avatarId);
+    setTempAvatarColor(avatarColor);
+    setAvatarModalOpen(true);
+  };
+
+  const handleApplyAvatar = () => {
+    setAvatarId(tempAvatarId);
+    setAvatarColor(tempAvatarColor);
+    setAvatarModalOpen(false);
+  };
 
   // Local settings toggles state for realistic interactive feel
   const [enterToSend, setEnterToSend] = useState(true);
@@ -211,39 +243,54 @@ export function SettingsView({ user }: { user: UserType }) {
           {section === "profile" && (
             <div className="space-y-4">
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-6 space-y-6 shadow-xs">
-                <div className="flex items-center gap-4">
-                  <Avatar
-                    user={{
-                      ...appUser,
-                      display_name: displayName,
-                      avatar_id: avatarId,
-                      avatar_color: avatarColor,
-                    }}
-                    size={68}
-                  />
-                  <div>
-                    <h3 className="font-semibold text-base text-[var(--text)]">{displayName || appUser.display_name}</h3>
-                    <p className="text-xs text-[var(--muted)]">
-                      {appUser.phone ? `Phone: ${appUser.phone}` : `@${appUser.username || "user"}`}
-                    </p>
-                    <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[var(--accent-light)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--accent)]">
-                      Active Account
-                    </span>
+                {/* Main Profile Card Header */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="relative group shrink-0">
+                      <Avatar
+                        user={{
+                          ...appUser,
+                          display_name: displayName,
+                          avatar_id: avatarId,
+                          avatar_color: avatarColor,
+                        }}
+                        size={72}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleOpenAvatarModal}
+                        className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-[var(--accent)] text-white shadow-md hover:scale-110 active:scale-95 transition-all"
+                        title="Change avatar"
+                        aria-label="Change avatar"
+                      >
+                        <Camera className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-lg text-[var(--text)] leading-tight">
+                        {displayName || appUser.display_name}
+                      </h3>
+                      <p className="text-xs text-[var(--muted)] mt-0.5">
+                        {appUser.phone ? `Phone: ${appUser.phone}` : `@${appUser.username || "user"}`}
+                      </p>
+                      <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-[var(--accent-light)] px-2.5 py-0.5 text-[11px] font-medium text-[var(--accent)]">
+                        Active Account
+                      </span>
+                    </div>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={handleOpenAvatarModal}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-4 py-2 text-xs font-semibold text-[var(--text)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--hover)] transition-all shadow-xs"
+                  >
+                    <Palette className="h-3.5 w-3.5 text-[var(--accent)]" />
+                    <span>Change avatar</span>
+                  </button>
                 </div>
 
-                {/* Avatar Preset & Color Picker */}
-                <div className="pt-4 border-t border-[var(--border)]">
-                  <AvatarPicker
-                    selectedPresetId={avatarId}
-                    selectedColor={avatarColor}
-                    onPresetChange={setAvatarId}
-                    onColorChange={setAvatarColor}
-                    displayName={displayName || appUser.display_name}
-                  />
-                </div>
-
-                <div className="space-y-3 pt-4 border-t border-[var(--border)]">
+                {/* Profile Fields */}
+                <div className="space-y-4 pt-4 border-t border-[var(--border)]">
                   <div>
                     <label className="text-xs font-semibold uppercase tracking-wider text-[var(--muted)]">
                       Display Name
@@ -252,7 +299,7 @@ export function SettingsView({ user }: { user: UserType }) {
                       value={displayName}
                       onChange={(e) => setDisplayName(e.target.value)}
                       placeholder="Your display name"
-                      className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors"
+                      className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2.5 text-sm text-[var(--text)] outline-none focus:border-[var(--accent)] transition-colors"
                     />
                   </div>
 
@@ -263,7 +310,7 @@ export function SettingsView({ user }: { user: UserType }) {
                     <input
                       defaultValue={appUser.phone ?? "Not configured"}
                       readOnly
-                      className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2 text-sm text-[var(--muted)] outline-none opacity-80 cursor-not-allowed"
+                      className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2.5 text-sm text-[var(--muted)] outline-none opacity-80 cursor-not-allowed"
                     />
                   </div>
 
@@ -274,7 +321,7 @@ export function SettingsView({ user }: { user: UserType }) {
                     <input
                       defaultValue={appUser.username ? `@${appUser.username}` : "None"}
                       readOnly
-                      className="mt-1 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2 text-sm text-[var(--muted)] outline-none opacity-80 cursor-not-allowed"
+                      className="mt-1.5 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-3.5 py-2.5 text-sm text-[var(--muted)] outline-none opacity-80 cursor-not-allowed"
                     />
                   </div>
 
@@ -295,6 +342,61 @@ export function SettingsView({ user }: { user: UserType }) {
                   </div>
                 </div>
               </div>
+
+              {/* Change Avatar Modal Dialog */}
+              {avatarModalOpen && (
+                <div
+                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs animate-in fade-in duration-150"
+                  onClick={() => setAvatarModalOpen(false)}
+                >
+                  <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="change-avatar-title"
+                    className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-6 shadow-2xl animate-in zoom-in-95 duration-150"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="mb-4 flex items-center justify-between">
+                      <h3 id="change-avatar-title" className="text-lg font-bold text-[var(--text)]">Change avatar</h3>
+                      <button
+                        type="button"
+                        onClick={() => setAvatarModalOpen(false)}
+                        aria-label="Close dialog"
+                        className="rounded-lg p-1.5 text-[var(--muted)] hover:bg-[var(--hover)] hover:text-[var(--text)] transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <div className="py-2">
+                      <AvatarPicker
+                        selectedPresetId={tempAvatarId}
+                        selectedColor={tempAvatarColor}
+                        onPresetChange={setTempAvatarId}
+                        onColorChange={setTempAvatarColor}
+                        displayName={displayName || appUser.display_name}
+                      />
+                    </div>
+
+                    <div className="mt-6 flex justify-end gap-2.5 pt-4 border-t border-[var(--border)]">
+                      <button
+                        type="button"
+                        onClick={() => setAvatarModalOpen(false)}
+                        className="rounded-xl border border-[var(--border)] bg-[var(--card-bg)] px-4 py-2 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--hover)] hover:text-[var(--text)] transition-colors"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleApplyAvatar}
+                        className="rounded-xl bg-[var(--accent)] px-5 py-2 text-xs font-semibold text-white hover:bg-[var(--accent-hover)] transition-colors shadow-xs"
+                      >
+                        Done
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* End-to-End Encryption Verification card */}
               <div className="rounded-2xl border border-[var(--border)] bg-[var(--panel)] p-5 shadow-xs">
