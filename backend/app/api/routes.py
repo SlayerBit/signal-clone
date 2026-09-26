@@ -69,6 +69,24 @@ class ReadBody(BaseModel):
     message_id: int | None = None
 
 
+def _ensure_cookie_partitioned(response: Response, cookie_name: str) -> None:
+    """Safely append the Partitioned attribute to matching Set-Cookie headers in Starlette."""
+    prefix = f"{cookie_name}=".encode("latin-1")
+    for idx, (header_name, header_val) in enumerate(response.raw_headers):
+        if header_name.lower() == b"set-cookie" and header_val.startswith(prefix):
+            if b"partitioned" not in header_val.lower():
+                response.raw_headers[idx] = (header_name, header_val + b"; Partitioned")
+    if (
+        hasattr(response, "headers")
+        and hasattr(response.headers, "raw")
+        and response.headers.raw is not response.raw_headers
+    ):
+        for idx, (header_name, header_val) in enumerate(response.headers.raw):
+            if header_name.lower() == b"set-cookie" and header_val.startswith(prefix):
+                if b"partitioned" not in header_val.lower():
+                    response.headers.raw[idx] = (header_name, header_val + b"; Partitioned")
+
+
 def _set_session_cookie(response: Response, token: str) -> None:
     response.set_cookie(
         key=settings.cookie_name,
@@ -78,6 +96,20 @@ def _set_session_cookie(response: Response, token: str) -> None:
         secure=settings.cookie_secure,
         max_age=settings.session_days * 86400,
     )
+    if settings.cookie_partitioned:
+        _ensure_cookie_partitioned(response, settings.cookie_name)
+
+
+def _clear_session_cookie(response: Response) -> None:
+    response.delete_cookie(
+        key=settings.cookie_name,
+        path="/",
+        secure=settings.cookie_secure,
+        httponly=True,
+        samesite=settings.cookie_samesite,
+    )
+    if settings.cookie_partitioned:
+        _ensure_cookie_partitioned(response, settings.cookie_name)
 
 
 @router.post("/auth/register/start")
@@ -128,7 +160,7 @@ def logout(
 ):
     if session_token:
         auth_service.logout(db, session_token)
-    response.delete_cookie(settings.cookie_name)
+    _clear_session_cookie(response)
     return {"ok": True}
 
 
