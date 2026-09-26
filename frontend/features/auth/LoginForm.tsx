@@ -290,9 +290,9 @@ export function LoginForm() {
                   : "#9dbbf9",
             }}
           >
-            <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between px-6 pt-12 pb-8 sm:px-10 sm:pt-16 sm:pb-12 lg:flex-row lg:px-16 lg:pt-20 lg:pb-16">
+            <div className="mx-auto flex w-full max-w-7xl flex-col items-center justify-between px-6 pt-12 pb-0 sm:px-10 sm:pt-16 lg:flex-row lg:items-end lg:px-16 lg:pt-20">
               {/* Left Column: Speak Freely & CTAs */}
-              <div className="z-10 flex w-full flex-col items-start text-left lg:max-w-xl">
+              <div className="z-10 flex w-full flex-col items-start text-left lg:max-w-xl pb-12 sm:pb-16 lg:pb-24">
                 <h1 className="text-5xl font-extrabold tracking-tight text-[#111827] dark:text-white sm:text-6xl lg:text-7xl leading-[1.06]">
                   Speak Freely
                 </h1>
@@ -325,12 +325,12 @@ export function LoginForm() {
                 </div>
               </div>
 
-              {/* Right Column: Exact Two-Phone Artwork from Reference Folder */}
-              <div className="relative mt-8 flex w-full items-center justify-center lg:mt-0 lg:w-1/2 lg:justify-end">
+              {/* Right Column: Floating Two-Phone Artwork */}
+              <div className="relative mt-8 flex w-full items-end justify-center lg:mt-0 lg:w-1/2 lg:justify-end">
                 <img
                   src="/signal-hero-phones.png"
                   alt="Signal encrypted messenger phone screens"
-                  className="max-h-[500px] w-auto max-w-full drop-shadow-2xl sm:max-h-[580px] lg:max-h-[640px] object-contain transition-transform duration-300 hover:scale-101"
+                  className="max-h-[460px] w-auto max-w-full drop-shadow-[0_20px_40px_rgba(0,0,0,0.18)] sm:max-h-[560px] lg:max-h-[640px] object-contain transition-transform duration-300 hover:scale-101 select-none"
                 />
               </div>
             </div>
