@@ -515,184 +515,262 @@ export function LoginForm() {
         /* ═══════════════════════════════════════════════════
            STAGE 2 & 3: AUTHENTICATION (IDENTIFY + OTP)
            ═══════════════════════════════════════════════════ */
-        <div className="flex min-h-screen w-full flex-col items-center justify-center px-6 py-12 animate-in fade-in duration-200">
-          <div className="relative flex w-full max-w-[420px] flex-col">
-            {/* Back button */}
-            <div className="mb-6">
+        <div
+          className={`flex min-h-screen w-full flex-col transition-colors ${
+            theme === "dark"
+              ? "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#172544] via-[#0f172a] to-[#090d16] text-[#f3f3f6]"
+              : "bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#d8e6fe] via-[#edf3fe] to-[#f8faff] text-[#121216]"
+          }`}
+        >
+          {/* ─── SIMPLIFIED AUTHENTICATION HEADER ─── */}
+          <header
+            className={`sticky top-0 z-40 flex h-18 w-full items-center justify-between border-b px-6 backdrop-blur-md transition-colors sm:px-10 lg:px-16 ${
+              theme === "dark"
+                ? "border-[#27272c] bg-[#121214]/90 text-[#f3f3f6]"
+                : "border-slate-200/80 bg-white/90 text-[#121216]"
+            }`}
+          >
+            {/* Left: Signal Icon + Wordmark */}
+            <div
+              onClick={goBackFromAuth}
+              className="flex items-center gap-3 cursor-pointer group"
+              title="Return to Welcome page"
+            >
+              <SignalLogo size={34} color={signalBlue} />
+              <span
+                className={`text-[24px] font-extrabold tracking-tight transition-colors ${
+                  theme === "dark" ? "text-[#f3f3f6]" : "text-[#121216]"
+                }`}
+              >
+                Signal
+              </span>
+            </div>
+
+            {/* Right: Theme Toggle & Back Button */}
+            <div className="flex items-center gap-3">
+              {/* Theme toggle */}
+              <button
+                type="button"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                className={`flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs shadow-xs transition-colors ${
+                  theme === "dark"
+                    ? "border-[#27272c] bg-[#1a1a1e] text-[#a0a0ab] hover:bg-[#24242a] hover:text-[#f3f3f6]"
+                    : "border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-black"
+                }`}
+                title="Toggle light/dark theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-3.5 w-3.5 text-amber-400" />
+                ) : (
+                  <Moon className="h-3.5 w-3.5 text-indigo-500" />
+                )}
+                <span className="capitalize">{theme === "dark" ? "Light" : "Dark"}</span>
+              </button>
+
+              {/* Back button */}
               <button
                 type="button"
                 onClick={goBackFromAuth}
-                className="group inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[13.5px] font-medium text-[var(--muted)] transition-colors hover:bg-[var(--hover)] hover:text-[var(--text)]"
+                className={`group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                  theme === "dark"
+                    ? "border-[#27272c] bg-[#1a1a1e] text-[#a0a0ab] hover:bg-[#24242a] hover:text-white"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:text-black shadow-xs"
+                }`}
                 title={stage === "otp" ? "Back to sign in" : "Back to welcome page"}
               >
-                <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
-                <span>Back</span>
+                <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-0.5" />
+                <span>{stage === "otp" ? "Change user" : "Welcome page"}</span>
               </button>
             </div>
+          </header>
 
-            {/* Branding */}
-            <div className="mb-6 flex flex-col items-center text-center">
-              <div className="mb-4 flex items-center gap-2.5">
-                <SignalLogo size={36} color={signalBlue} />
-                <span className="text-[26px] font-extrabold tracking-tight text-[var(--text)]">
-                  Signal
-                </span>
+          {/* ─── MAIN AUTHENTICATION CARD / CONTENT ─── */}
+          <main className="flex flex-1 items-center justify-center px-4 py-8 sm:px-6 lg:py-12 animate-in fade-in duration-200">
+            <div
+              className={`w-full max-w-[460px] rounded-3xl border p-7 sm:p-9 shadow-2xl backdrop-blur-xl transition-all ${
+                theme === "dark"
+                  ? "border-[#27272c]/90 bg-[#16171c]/90 shadow-black/50"
+                  : "border-slate-200/80 bg-white/95 shadow-blue-950/5"
+              }`}
+            >
+              {/* Card Header: Title & Subtitle */}
+              <div className="mb-6 text-left">
+                {stage === "identify" ? (
+                  <>
+                    <h2
+                      className={`text-2xl sm:text-[28px] font-extrabold leading-tight tracking-tight ${
+                        theme === "dark" ? "text-white" : "text-[#111827]"
+                      }`}
+                    >
+                      Sign in to Signal
+                    </h2>
+                    <p
+                      className={`mt-2 text-[15px] leading-relaxed ${
+                        theme === "dark" ? "text-slate-300" : "text-[#1f2937]/80"
+                      }`}
+                    >
+                      Enter your username or phone number to continue.
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <h2
+                      className={`text-2xl sm:text-[28px] font-extrabold leading-tight tracking-tight ${
+                        theme === "dark" ? "text-white" : "text-[#111827]"
+                      }`}
+                    >
+                      Enter verification code
+                    </h2>
+                    <p
+                      className={`mt-2 text-[15px] leading-relaxed ${
+                        theme === "dark" ? "text-slate-300" : "text-[#1f2937]/80"
+                      }`}
+                    >
+                      Enter the 6-digit code to continue as{" "}
+                      <span className={`font-bold ${theme === "dark" ? "text-white" : "text-[#111827]"}`}>
+                        {identifier}
+                      </span>
+                    </p>
+                  </>
+                )}
               </div>
 
               {stage === "identify" ? (
-                <>
-                  <h2 className="text-[26px] font-extrabold leading-tight tracking-tight text-[var(--text)]">
-                    Sign in to Signal
-                  </h2>
-                  <p className="mt-1.5 text-[14px] leading-relaxed text-[var(--muted)]">
-                    Enter your username or phone number to continue.
-                  </p>
-                </>
+                /* ── IDENTIFY FORM ── */
+                <form onSubmit={handleIdentifySubmit} className="w-full" noValidate>
+                  <div className="mb-5">
+                    <label
+                      htmlFor="auth-identifier"
+                      className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[var(--text-secondary)]"
+                    >
+                      Username or phone number
+                    </label>
+                    <input
+                      id="auth-identifier"
+                      type="text"
+                      value={identifier}
+                      onChange={(e) => {
+                        setIdentifier(e.target.value);
+                        if (error) setError("");
+                      }}
+                      placeholder="e.g. om or +919842946728"
+                      autoComplete="username"
+                      autoFocus
+                      disabled={loading}
+                      className="h-13 sm:h-14 w-full rounded-2xl border border-[var(--border)] bg-[var(--input-bg)] px-4 text-[16px] text-[var(--text)] outline-none transition-all placeholder:text-[14.5px] placeholder:text-[var(--muted)] focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50 shadow-2xs"
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm leading-snug text-red-500">
+                      {error}
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loading || !identifier.trim()}
+                    className="flex h-13 sm:h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#2c6bed] text-[16px] font-bold text-white shadow-md transition-all hover:bg-[#1851B4] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
+                  >
+                    {loading && <Loader2 className="h-5 w-5 animate-spin" />}
+                    {loading ? "Verifying…" : "Continue"}
+                  </button>
+
+                  <div className="mt-5 text-center">
+                    <Link
+                      href="/register"
+                      className="text-sm font-semibold text-[#2c6bed] transition-colors hover:underline"
+                    >
+                      Don&apos;t have an account? Create one
+                    </Link>
+                  </div>
+
+                  {/* Demo Accounts Pill Box */}
+                  <div className="mt-7 rounded-2xl border border-[var(--border)] bg-[var(--card-bg)] p-4 shadow-2xs">
+                    <div className="mb-2.5 flex items-center justify-between text-xs font-medium text-[var(--muted)]">
+                      <span className="flex items-center gap-1.5 uppercase tracking-wider font-semibold">
+                        <KeyRound className="h-3.5 w-3.5 text-[#2c6bed]" />
+                        Quick Test Accounts
+                      </span>
+                      <span className="font-mono text-[11px] rounded-md bg-[var(--input-bg)] px-2 py-0.5 border border-[var(--border)]">
+                        OTP: 123456
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      {[
+                        { key: "om", label: "Om" },
+                        { key: "rahul", label: "Rahul" },
+                      ].map((user) => (
+                        <button
+                          key={user.key}
+                          type="button"
+                          onClick={() => fillDemoUser(user.key)}
+                          className={`flex-1 rounded-xl border py-2 text-xs font-semibold transition-all ${
+                            identifier === user.key
+                              ? "border-[#2c6bed] bg-[#2c6bed]/10 text-[#2c6bed] shadow-xs"
+                              : "border-[var(--border)] bg-transparent text-[var(--text-secondary)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
+                          }`}
+                        >
+                          {user.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </form>
               ) : (
-                <>
-                  <h2 className="text-[26px] font-extrabold leading-tight tracking-tight text-[var(--text)]">
-                    Enter verification code
-                  </h2>
-                  <p className="mt-1.5 text-[14px] leading-relaxed text-[var(--muted)]">
-                    Enter the 6-digit code to continue as{" "}
-                    <span className="font-semibold text-[var(--text)]">{identifier}</span>
-                  </p>
-                </>
-              )}
-            </div>
-
-            {stage === "identify" ? (
-              /* ── IDENTIFY FORM ── */
-              <form onSubmit={handleIdentifySubmit} className="w-full" noValidate>
-                <div className="mb-4">
-                  <label
-                    htmlFor="auth-identifier"
-                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--text-secondary)]"
-                  >
-                    Username or phone
-                  </label>
-                  <input
-                    id="auth-identifier"
-                    type="text"
-                    value={identifier}
-                    onChange={(e) => {
-                      setIdentifier(e.target.value);
-                      if (error) setError("");
-                    }}
-                    placeholder="e.g. om or +919842946728"
-                    autoComplete="username"
-                    autoFocus
-                    disabled={loading}
-                    className="h-12 w-full rounded-xl border border-[var(--border)] bg-[var(--input-bg)] px-4 text-[15px] text-[var(--text)] outline-none transition-all placeholder:text-[13.5px] placeholder:text-[var(--muted)] focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50"
-                  />
-                </div>
-
-                {error && (
-                  <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-3.5 py-2.5 text-[13px] leading-snug text-red-500">
-                    {error}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={loading || !identifier.trim()}
-                  className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#2c6bed] text-[15px] font-semibold text-white shadow-sm transition-all hover:bg-[#1851B4] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
+                /* ── OTP FORM ── */
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleOtpSubmit();
+                  }}
+                  className="w-full"
+                  noValidate
                 >
-                  {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {loading ? "Verifying…" : "Continue"}
-                </button>
-
-                <div className="mt-4 text-center">
-                  <Link
-                    href="/register"
-                    className="text-[13px] font-medium text-[#2c6bed] transition-colors hover:underline hover:opacity-90"
-                  >
-                    Don&apos;t have an account? Create one
-                  </Link>
-                </div>
-
-                {/* Demo Accounts Pill Accordion */}
-                <div className="mt-8 rounded-xl border border-[var(--border)] bg-[var(--panel)] p-3.5">
-                  <div className="mb-2 flex items-center justify-between text-[11px] font-medium text-[var(--muted)]">
-                    <span className="flex items-center gap-1.5 uppercase tracking-wider font-semibold">
-                      <KeyRound className="h-3 w-3 text-[#2c6bed]" />
-                      Quick Test Accounts
-                    </span>
-                    <span className="font-mono text-[10.5px]">OTP: 123456</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {[
-                      { key: "om", label: "Om" },
-                      { key: "rahul", label: "Rahul" },
-                    ].map((user) => (
-                      <button
-                        key={user.key}
-                        type="button"
-                        onClick={() => fillDemoUser(user.key)}
-                        className={`flex-1 rounded-lg border py-1.5 text-[12px] font-medium transition-all ${
-                          identifier === user.key
-                            ? "border-[#2c6bed] bg-[#2c6bed]/10 text-[#2c6bed]"
-                            : "border-[var(--border)] bg-transparent text-[var(--text-secondary)] hover:bg-[var(--hover)] hover:text-[var(--text)]"
-                        }`}
-                      >
-                        {user.label}
-                      </button>
+                  <div className="mb-6 flex items-center justify-center gap-2.5 sm:gap-3">
+                    {otp.map((digit, i) => (
+                      <input
+                        key={i}
+                        ref={(el) => {
+                          otpRefs.current[i] = el;
+                        }}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={1}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(i, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                        onPaste={i === 0 ? handleOtpPaste : undefined}
+                        disabled={loading}
+                        className="h-14 w-11 sm:h-15 sm:w-13 rounded-2xl border border-[var(--border)] bg-[var(--input-bg)] text-center font-mono text-2xl font-bold text-[var(--text)] outline-none transition-all focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50 shadow-2xs"
+                        aria-label={`Digit ${i + 1}`}
+                      />
                     ))}
                   </div>
-                </div>
-              </form>
-            ) : (
-              /* ── OTP FORM ── */
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleOtpSubmit();
-                }}
-                className="w-full"
-                noValidate
-              >
-                <div className="mb-6 flex items-center justify-center gap-2.5 sm:gap-3">
-                  {otp.map((digit, i) => (
-                    <input
-                      key={i}
-                      ref={(el) => {
-                        otpRefs.current[i] = el;
-                      }}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(i, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      onPaste={i === 0 ? handleOtpPaste : undefined}
-                      disabled={loading}
-                      className="h-13 w-11 sm:h-14 sm:w-12 rounded-xl border border-[var(--border)] bg-[var(--input-bg)] text-center font-mono text-xl font-bold text-[var(--text)] outline-none transition-all focus:border-[#2c6bed] focus:ring-2 focus:ring-[#2c6bed]/20 disabled:opacity-50"
-                      aria-label={`Digit ${i + 1}`}
-                    />
-                  ))}
-                </div>
 
-                {error && (
-                  <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-3.5 py-2.5 text-center text-[13px] leading-snug text-red-500">
-                    {error}
-                  </div>
-                )}
+                  {error && (
+                    <div className="mb-5 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-center text-sm leading-snug text-red-500">
+                      {error}
+                    </div>
+                  )}
 
-                <button
-                  type="submit"
-                  disabled={loading || otp.join("").length !== 6}
-                  className="flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#2c6bed] text-[15px] font-semibold text-white shadow-sm transition-all hover:bg-[#1851B4] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
-                >
-                  {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {loading ? "Verifying…" : "Verify & Sign In"}
-                </button>
+                  <button
+                    type="submit"
+                    disabled={loading || otp.join("").length !== 6}
+                    className="flex h-13 sm:h-14 w-full items-center justify-center gap-2 rounded-2xl bg-[#2c6bed] text-[16px] font-bold text-white shadow-md transition-all hover:bg-[#1851B4] active:scale-[0.985] disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2c6bed]"
+                  >
+                    {loading && <Loader2 className="h-5 w-5 animate-spin" />}
+                    {loading ? "Verifying…" : "Verify & Sign In"}
+                  </button>
 
-                <p className="mt-5 text-center text-[12px] text-[var(--muted)]">
-                  Demo verification code: <span className="font-mono font-medium text-[var(--text)]">123456</span>
-                </p>
-              </form>
-            )}
-          </div>
+                  <p className="mt-5 text-center text-xs text-[var(--muted)]">
+                    Demo verification code:{" "}
+                    <span className="font-mono font-bold text-[var(--text)]">123456</span>
+                  </p>
+                </form>
+              )}
+            </div>
+          </main>
         </div>
       )}
 
